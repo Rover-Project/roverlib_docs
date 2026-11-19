@@ -1,0 +1,5644 @@
+{
+ "roverlib.plugins.camera.factory.open_camera": {
+  "name": "open_camera",
+  "path": "roverlib.plugins.camera.factory.open_camera",
+  "kind": "function",
+  "labels": [],
+  "lineno": 14,
+  "filepath": "roverlib/plugins/camera/factory.py",
+  "parameters": [
+   {
+    "name": "height",
+    "kind": "positional or keyword",
+    "annotation": "int",
+    "default": "480"
+   },
+   {
+    "name": "width",
+    "kind": "positional or keyword",
+    "annotation": "int",
+    "default": "640"
+   },
+   {
+    "name": "fps",
+    "kind": "positional or keyword",
+    "annotation": "int",
+    "default": "30"
+   },
+   {
+    "name": "index",
+    "kind": "positional or keyword",
+    "annotation": "int",
+    "default": "0"
+   },
+   {
+    "name": "use_webcam",
+    "kind": "positional or keyword",
+    "annotation": "bool",
+    "default": "None"
+   },
+   {
+    "name": "picamera_options",
+    "kind": "variadic keyword",
+    "annotation": null,
+    "default": "{}"
+   }
+  ],
+  "returns": null,
+  "docstring": [
+   {
+    "kind": "text",
+    "value": "Abre a câmera disponível e já a deixa pronta para capturar."
+   },
+   {
+    "kind": "parameters",
+    "value": [
+     {
+      "name": "height",
+      "annotation": "int",
+      "description": "altura dos frames, em pixels. Padrão 480.",
+      "default": "480"
+     },
+     {
+      "name": "width",
+      "annotation": "int",
+      "description": "largura dos frames, em pixels. Padrão 640.",
+      "default": "640"
+     },
+     {
+      "name": "fps",
+      "annotation": "int",
+      "description": "quadros por segundo. Padrão 30.",
+      "default": "30"
+     },
+     {
+      "name": "index",
+      "annotation": "int",
+      "description": "qual câmera usar, se houver mais de uma. Padrão 0.",
+      "default": "0"
+     },
+     {
+      "name": "use_webcam",
+      "annotation": "bool",
+      "description": "None (padrão) usa a Picamera2 se disponível e,\nsenão, a webcam; True sempre usa a webcam (OpenCV); False exige a Picamera2.",
+      "default": "None"
+     },
+     {
+      "name": "**picamera_options",
+      "annotation": null,
+      "description": "opções extras da `Camera` (ex.: `horizontalFlip=True`,\n`verticalFlip=True`). Ignoradas quando a webcam é usada.",
+      "default": "{}"
+     }
+    ]
+   },
+   {
+    "kind": "returns",
+    "value": [
+     {
+      "name": "",
+      "annotation": null,
+      "description": "Camera | Webcam: a câmera já iniciada. As duas têm `get_frame()` (frames em BGR),\n`start()`, `stop()` e `cleanup()`."
+     }
+    ]
+   },
+   {
+    "kind": "raises",
+    "value": [
+     {
+      "name": "",
+      "annotation": "CameraNotAvailable",
+      "description": "`use_webcam=False` fora da Raspberry Pi."
+     }
+    ]
+   },
+   {
+    "kind": "text",
+    "value": "Exemplo:\n\n```python\ncam = open_camera(480, 640)\nframe = cam.get_frame()\ncam.cleanup()\n```"
+   }
+  ]
+ },
+ "roverlib.plugins.camera.camera.Camera": {
+  "name": "Camera",
+  "path": "roverlib.plugins.camera.camera.Camera",
+  "kind": "class",
+  "labels": [],
+  "lineno": 27,
+  "filepath": "roverlib/plugins/camera/camera.py",
+  "bases": [
+   "CameraInterface"
+  ],
+  "parameters": [
+   {
+    "name": "height",
+    "kind": "positional or keyword",
+    "annotation": "int",
+    "default": null
+   },
+   {
+    "name": "width",
+    "kind": "positional or keyword",
+    "annotation": "int",
+    "default": null
+   },
+   {
+    "name": "fps",
+    "kind": "positional or keyword",
+    "annotation": "int",
+    "default": "30"
+   },
+   {
+    "name": "index",
+    "kind": "positional or keyword",
+    "annotation": "int",
+    "default": "0"
+   },
+   {
+    "name": "format",
+    "kind": "positional or keyword",
+    "annotation": null,
+    "default": "None"
+   },
+   {
+    "name": "horizontalFlip",
+    "kind": "positional or keyword",
+    "annotation": "bool",
+    "default": "False"
+   },
+   {
+    "name": "verticalFlip",
+    "kind": "positional or keyword",
+    "annotation": "bool",
+    "default": "False"
+   }
+  ],
+  "docstring": [
+   {
+    "kind": "text",
+    "value": "Câmera da Raspberry Pi (CSI), controlada pela Picamera2 (drivers libcamera).\n\nOs frames são arrays NumPy em **BGR**, o padrão do OpenCV: podem ir direto para\n`cv2.imshow()` e para as funções de `ProcessingImage`. No Rover, a câmera é uma\nArducam IMX519; para controlar o foco dela, use `AfCamera`.\n\nExemplo:\n\n```python\ncam = Camera(height=480, width=640)\ncam.start()\nframe = cam.get_frame()\ncam.cleanup()\n```\n\nPrefira `open_camera()` ou a seção `camera:` do config.yaml, que escolhem a\nwebcam automaticamente no PC."
+   },
+   {
+    "kind": "text",
+    "value": "Configura a câmera. Chame `start()` antes de capturar."
+   },
+   {
+    "kind": "parameters",
+    "value": [
+     {
+      "name": "height",
+      "annotation": "int",
+      "description": "altura dos frames, em pixels.",
+      "default": null
+     },
+     {
+      "name": "width",
+      "annotation": "int",
+      "description": "largura dos frames, em pixels.",
+      "default": null
+     },
+     {
+      "name": "fps",
+      "annotation": "int",
+      "description": "quadros por segundo. Padrão 30.",
+      "default": "30"
+     },
+     {
+      "name": "index",
+      "annotation": "int",
+      "description": "qual câmera usar, se houver mais de uma. Padrão 0.",
+      "default": "0"
+     },
+     {
+      "name": "format",
+      "annotation": "CameraFormat | str",
+      "description": "formato de cor dos frames (`CameraFormat.RGB`,\n`\"gray\"`...). Padrão: BGR, sem conversão. Veja `set_format()`.",
+      "default": "None"
+     },
+     {
+      "name": "horizontalFlip",
+      "annotation": "bool",
+      "description": "espelha a imagem na horizontal. Padrão False.",
+      "default": "False"
+     },
+     {
+      "name": "verticalFlip",
+      "annotation": "bool",
+      "description": "espelha a imagem na vertical. Padrão False.\nCom a câmera de cabeça para baixo, use os dois flips.",
+      "default": "False"
+     }
+    ]
+   },
+   {
+    "kind": "raises",
+    "value": [
+     {
+      "name": "",
+      "annotation": "CameraNotAvailable",
+      "description": "a Picamera2 ou a libcamera não estão instaladas (por exemplo, no PC)."
+     }
+    ]
+   }
+  ],
+  "members": [
+   {
+    "name": "start",
+    "path": "roverlib.plugins.camera.camera.Camera.start",
+    "kind": "function",
+    "labels": [],
+    "lineno": 112,
+    "filepath": "roverlib/plugins/camera/camera.py",
+    "parameters": [],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Inicia a captura. Chamar de novo com a câmera já ligada não faz nada."
+     }
+    ]
+   },
+   {
+    "name": "stop",
+    "path": "roverlib.plugins.camera.camera.Camera.stop",
+    "kind": "function",
+    "labels": [],
+    "lineno": 120,
+    "filepath": "roverlib/plugins/camera/camera.py",
+    "parameters": [],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Para a captura (a câmera pode ser iniciada de novo com `start()`)."
+     }
+    ]
+   },
+   {
+    "name": "set_exposure",
+    "path": "roverlib.plugins.camera.camera.Camera.set_exposure",
+    "kind": "function",
+    "labels": [],
+    "lineno": 127,
+    "filepath": "roverlib/plugins/camera/camera.py",
+    "parameters": [
+     {
+      "name": "expousure_us",
+      "kind": "positional or keyword",
+      "annotation": "int",
+      "default": null
+     },
+     {
+      "name": "gain",
+      "kind": "positional or keyword",
+      "annotation": "float",
+      "default": null
+     }
+    ],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Fixa a exposição manualmente, desligando a exposição automática."
+     },
+     {
+      "kind": "parameters",
+      "value": [
+       {
+        "name": "expousure_us",
+        "annotation": "int",
+        "description": "tempo de exposição de cada frame, em microssegundos.\nValores maiores clareiam a imagem, mas borram objetos em movimento.",
+        "default": null
+       },
+       {
+        "name": "gain",
+        "annotation": "float",
+        "description": "ganho analógico do sensor (1.0 = sem ganho). Valores maiores\nclareiam a imagem, com mais ruído.",
+        "default": null
+       }
+      ]
+     },
+     {
+      "kind": "text",
+      "value": "Para voltar à exposição automática, use `enable_exposure()`."
+     }
+    ]
+   },
+   {
+    "name": "enable_exposure",
+    "path": "roverlib.plugins.camera.camera.Camera.enable_exposure",
+    "kind": "function",
+    "labels": [],
+    "lineno": 148,
+    "filepath": "roverlib/plugins/camera/camera.py",
+    "parameters": [],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Volta à exposição automática (desfaz `set_exposure()`)."
+     }
+    ]
+   },
+   {
+    "name": "set_FPS",
+    "path": "roverlib.plugins.camera.camera.Camera.set_FPS",
+    "kind": "function",
+    "labels": [],
+    "lineno": 156,
+    "filepath": "roverlib/plugins/camera/camera.py",
+    "parameters": [
+     {
+      "name": "fps",
+      "kind": "positional or keyword",
+      "annotation": "int",
+      "default": null
+     }
+    ],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Muda a taxa de quadros da câmera."
+     },
+     {
+      "kind": "parameters",
+      "value": [
+       {
+        "name": "fps",
+        "annotation": "int",
+        "description": "nova taxa de quadros por segundo.",
+        "default": null
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "name": "set_brightness",
+    "path": "roverlib.plugins.camera.camera.Camera.set_brightness",
+    "kind": "function",
+    "labels": [],
+    "lineno": 167,
+    "filepath": "roverlib/plugins/camera/camera.py",
+    "parameters": [
+     {
+      "name": "brightness",
+      "kind": "positional or keyword",
+      "annotation": "float",
+      "default": "0.0"
+     }
+    ],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Ajusta o brilho da imagem.\n\nO ajuste soma aproximadamente `255 × brightness` a cada pixel: valores pequenos\n(±0.1) já fazem bastante diferença, e -0.3 deixa uma sala comum quase preta."
+     },
+     {
+      "kind": "parameters",
+      "value": [
+       {
+        "name": "brightness",
+        "annotation": "float",
+        "description": "de -1.0 (mais escuro) a 1.0 (mais claro). Padrão 0.0 (sem ajuste).",
+        "default": "0.0"
+       }
+      ]
+     },
+     {
+      "kind": "raises",
+      "value": [
+       {
+        "name": "",
+        "annotation": "ValueError",
+        "description": "valor fora do intervalo [-1.0, 1.0]."
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "name": "set_contrast",
+    "path": "roverlib.plugins.camera.camera.Camera.set_contrast",
+    "kind": "function",
+    "labels": [],
+    "lineno": 191,
+    "filepath": "roverlib/plugins/camera/camera.py",
+    "parameters": [
+     {
+      "name": "contrast",
+      "kind": "positional or keyword",
+      "annotation": "float",
+      "default": "1"
+     }
+    ],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Ajusta o contraste da imagem."
+     },
+     {
+      "kind": "parameters",
+      "value": [
+       {
+        "name": "contrast",
+        "annotation": "float",
+        "description": "de 0.0 a 32.0. 1.0 (padrão) mantém a imagem original;\nvalores maiores aumentam a diferença entre claros e escuros.",
+        "default": "1"
+       }
+      ]
+     },
+     {
+      "kind": "raises",
+      "value": [
+       {
+        "name": "",
+        "annotation": "ValueError",
+        "description": "valor fora do intervalo [0, 32]."
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "name": "set_saturation",
+    "path": "roverlib.plugins.camera.camera.Camera.set_saturation",
+    "kind": "function",
+    "labels": [],
+    "lineno": 213,
+    "filepath": "roverlib/plugins/camera/camera.py",
+    "parameters": [
+     {
+      "name": "saturation",
+      "kind": "positional or keyword",
+      "annotation": null,
+      "default": null
+     }
+    ],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Ajusta a saturação (intensidade das cores) da imagem."
+     },
+     {
+      "kind": "parameters",
+      "value": [
+       {
+        "name": "saturation",
+        "annotation": "float",
+        "description": "de 0.0 (preto e branco) a 32.0. 1.0 mantém as cores originais.",
+        "default": null
+       }
+      ]
+     },
+     {
+      "kind": "raises",
+      "value": [
+       {
+        "name": "",
+        "annotation": "ValueError",
+        "description": "valor fora do intervalo [0, 32]."
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "name": "set_region_interest",
+    "path": "roverlib.plugins.camera.camera.Camera.set_region_interest",
+    "kind": "function",
+    "labels": [],
+    "lineno": 234,
+    "filepath": "roverlib/plugins/camera/camera.py",
+    "parameters": [
+     {
+      "name": "region_interest",
+      "kind": "positional or keyword",
+      "annotation": "tuple[int, int, int, int]",
+      "default": null
+     }
+    ],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Recorta os próximos frames para uma região da imagem."
+     },
+     {
+      "kind": "parameters",
+      "value": [
+       {
+        "name": "region_interest",
+        "annotation": "tuple[int, int, int, int]",
+        "description": "`(x, y, largura, altura)` da região, em pixels,\na partir do canto superior esquerdo `(x, y)`.",
+        "default": null
+       }
+      ]
+     },
+     {
+      "kind": "text",
+      "value": "Para voltar à imagem inteira, use `clear_region_interest()`."
+     }
+    ]
+   },
+   {
+    "name": "clear_region_interest",
+    "path": "roverlib.plugins.camera.camera.Camera.clear_region_interest",
+    "kind": "function",
+    "labels": [],
+    "lineno": 246,
+    "filepath": "roverlib/plugins/camera/camera.py",
+    "parameters": [],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Remove o recorte definido por `set_region_interest()`."
+     }
+    ]
+   },
+   {
+    "name": "set_format",
+    "path": "roverlib.plugins.camera.camera.Camera.set_format",
+    "kind": "function",
+    "labels": [],
+    "lineno": 250,
+    "filepath": "roverlib/plugins/camera/camera.py",
+    "parameters": [
+     {
+      "name": "format",
+      "kind": "positional or keyword",
+      "annotation": null,
+      "default": null
+     }
+    ],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Escolhe o formato de cor dos próximos frames."
+     },
+     {
+      "kind": "parameters",
+      "value": [
+       {
+        "name": "format",
+        "annotation": "CameraFormat | str | None",
+        "description": "`CameraFormat.BGR` (padrão do OpenCV, sem conversão),\n`.RGB`, `.Gray` (um canal) ou `.HSV`. Também aceita os nomes `\"bgr\"`, `\"rgb\"`,\n`\"gray\"` e `\"hsv\"`. None volta ao BGR.",
+        "default": null
+       }
+      ]
+     },
+     {
+      "kind": "raises",
+      "value": [
+       {
+        "name": "",
+        "annotation": "ValueError",
+        "description": "formato desconhecido."
+       }
+      ]
+     },
+     {
+      "kind": "text",
+      "value": "Exemplo:\n\n```python\ncam.set_format(\"hsv\")\nhsv = cam.get_frame()      # pronto para cv2.inRange()\n```"
+     }
+    ]
+   },
+   {
+    "name": "get_frame",
+    "path": "roverlib.plugins.camera.camera.Camera.get_frame",
+    "kind": "function",
+    "labels": [],
+    "lineno": 271,
+    "filepath": "roverlib/plugins/camera/camera.py",
+    "parameters": [],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Captura um frame."
+     },
+     {
+      "kind": "returns",
+      "value": [
+       {
+        "name": "",
+        "annotation": null,
+        "description": "numpy.ndarray: imagem em **BGR** `(altura, largura, 3)`, ou no formato escolhido em\n`set_format()`; já recortada pela região de interesse, se houver."
+       }
+      ]
+     },
+     {
+      "kind": "raises",
+      "value": [
+       {
+        "name": "",
+        "annotation": "CameraNotStart",
+        "description": "a câmera não foi iniciada com `start()`."
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "name": "get_frame_time",
+    "path": "roverlib.plugins.camera.camera.Camera.get_frame_time",
+    "kind": "function",
+    "labels": [],
+    "lineno": 294,
+    "filepath": "roverlib/plugins/camera/camera.py",
+    "parameters": [],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Captura um frame e o instante da captura."
+     },
+     {
+      "kind": "returns",
+      "value": [
+       {
+        "name": "tuple",
+        "annotation": null,
+        "description": "`(frame, instante)`, com o instante em segundos (`time.time()`)."
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "name": "get_picture",
+    "path": "roverlib.plugins.camera.camera.Camera.get_picture",
+    "kind": "function",
+    "labels": [],
+    "lineno": 304,
+    "filepath": "roverlib/plugins/camera/camera.py",
+    "parameters": [
+     {
+      "name": "file",
+      "kind": "positional or keyword",
+      "annotation": "str",
+      "default": null
+     }
+    ],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Mostra a imagem da câmera em uma janela e salva uma foto quando a tecla **s** é pressionada."
+     },
+     {
+      "kind": "parameters",
+      "value": [
+       {
+        "name": "file",
+        "annotation": "str",
+        "description": "caminho do arquivo de imagem (ex.: `\"foto.jpg\"`).",
+        "default": null
+       }
+      ]
+     },
+     {
+      "kind": "raises",
+      "value": [
+       {
+        "name": "",
+        "annotation": "CameraNotStart",
+        "description": "a câmera não foi iniciada com `start()`."
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "name": "get_video",
+    "path": "roverlib.plugins.camera.camera.Camera.get_video",
+    "kind": "function",
+    "labels": [],
+    "lineno": 332,
+    "filepath": "roverlib/plugins/camera/camera.py",
+    "parameters": [
+     {
+      "name": "file",
+      "kind": "positional or keyword",
+      "annotation": "str",
+      "default": null
+     },
+     {
+      "name": "t",
+      "kind": "positional or keyword",
+      "annotation": "float",
+      "default": null
+     }
+    ],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Grava um vídeo H.264 por um tempo fixo, com pré-visualização na tela."
+     },
+     {
+      "kind": "parameters",
+      "value": [
+       {
+        "name": "file",
+        "annotation": "str",
+        "description": "caminho do arquivo de vídeo (ex.: `\"video.h264\"`).",
+        "default": null
+       },
+       {
+        "name": "t",
+        "annotation": "float",
+        "description": "duração da gravação, em segundos.",
+        "default": null
+       }
+      ]
+     },
+     {
+      "kind": "raises",
+      "value": [
+       {
+        "name": "",
+        "annotation": "CameraNotStart",
+        "description": "a câmera não foi iniciada com `start()`."
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "name": "metadata",
+    "path": "roverlib.plugins.camera.camera.Camera.metadata",
+    "kind": "function",
+    "labels": [],
+    "lineno": 354,
+    "filepath": "roverlib/plugins/camera/camera.py",
+    "parameters": [],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Lê os metadados do frame mais recente."
+     },
+     {
+      "kind": "returns",
+      "value": [
+       {
+        "name": "dict",
+        "annotation": null,
+        "description": "valores como `ExposureTime`, `AnalogueGain`, `LensPosition` e `Lux`."
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "name": "isRunning",
+    "path": "roverlib.plugins.camera.camera.Camera.isRunning",
+    "kind": "function",
+    "labels": [],
+    "lineno": 364,
+    "filepath": "roverlib/plugins/camera/camera.py",
+    "parameters": [],
+    "returns": "bool",
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Indica se a câmera está capturando."
+     },
+     {
+      "kind": "returns",
+      "value": [
+       {
+        "name": "bool",
+        "annotation": "bool",
+        "description": "True entre `start()` e `stop()`."
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "name": "cleanup",
+    "path": "roverlib.plugins.camera.camera.Camera.cleanup",
+    "kind": "function",
+    "labels": [],
+    "lineno": 373,
+    "filepath": "roverlib/plugins/camera/camera.py",
+    "parameters": [],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Para a câmera e libera os recursos. Pode ser chamado mais de uma vez."
+     }
+    ]
+   }
+  ]
+ },
+ "roverlib.plugins.camera.autoFocus.AfCamera": {
+  "name": "AfCamera",
+  "path": "roverlib.plugins.camera.autoFocus.AfCamera",
+  "kind": "class",
+  "labels": [],
+  "lineno": 35,
+  "filepath": "roverlib/plugins/camera/autoFocus.py",
+  "bases": [
+   "Camera"
+  ],
+  "parameters": [
+   {
+    "name": "height",
+    "kind": "positional or keyword",
+    "annotation": "int",
+    "default": null
+   },
+   {
+    "name": "width",
+    "kind": "positional or keyword",
+    "annotation": "int",
+    "default": null
+   },
+   {
+    "name": "fps",
+    "kind": "positional or keyword",
+    "annotation": "int",
+    "default": "30"
+   },
+   {
+    "name": "index",
+    "kind": "positional or keyword",
+    "annotation": "int",
+    "default": "0"
+   },
+   {
+    "name": "format",
+    "kind": "positional or keyword",
+    "annotation": null,
+    "default": "None"
+   },
+   {
+    "name": "horizontalFlip",
+    "kind": "positional or keyword",
+    "annotation": "bool",
+    "default": "False"
+   },
+   {
+    "name": "verticalFlip",
+    "kind": "positional or keyword",
+    "annotation": "bool",
+    "default": "False"
+   },
+   {
+    "name": "afMode",
+    "kind": "positional or keyword",
+    "annotation": "AfModeEnum",
+    "default": "AfModeEnum.Continuous"
+   },
+   {
+    "name": "afSpeed",
+    "kind": "positional or keyword",
+    "annotation": "AfSpeedEnum",
+    "default": "AfSpeedEnum.Normal"
+   }
+  ],
+  "docstring": [
+   {
+    "kind": "text",
+    "value": "Câmera com controle de foco, para módulos com autofoco (no Rover, a Arducam IMX519).\n\nFaz tudo o que a `Camera` faz e acrescenta o controle do foco. Por padrão, o foco\né contínuo: a câmera reajusta sozinha quando a distância dos objetos muda.\n\nExemplo:\n\n```python\ncam = AfCamera(height=720, width=1280)\ncam.start()\ncam.focus_time(3)          # ajusta o foco por 3 s e trava\nframe = cam.get_frame()\ncam.cleanup()\n```"
+   },
+   {
+    "kind": "parameters",
+    "value": [
+     {
+      "name": "height",
+      "annotation": "int",
+      "description": "altura dos frames, em pixels.",
+      "default": null
+     },
+     {
+      "name": "width",
+      "annotation": "int",
+      "description": "largura dos frames, em pixels.",
+      "default": null
+     },
+     {
+      "name": "fps",
+      "annotation": "int",
+      "description": "quadros por segundo. Padrão 30.",
+      "default": "30"
+     },
+     {
+      "name": "index",
+      "annotation": "int",
+      "description": "qual câmera usar, se houver mais de uma. Padrão 0.",
+      "default": "0"
+     },
+     {
+      "name": "format",
+      "annotation": "CameraFormat | str",
+      "description": "formato de cor dos frames. Padrão: BGR (sem conversão).",
+      "default": "None"
+     },
+     {
+      "name": "horizontalFlip",
+      "annotation": "bool",
+      "description": "espelha a imagem na horizontal. Padrão False.",
+      "default": "False"
+     },
+     {
+      "name": "verticalFlip",
+      "annotation": "bool",
+      "description": "espelha a imagem na vertical. Padrão False.",
+      "default": "False"
+     },
+     {
+      "name": "afMode",
+      "annotation": "AfModeEnum",
+      "description": "modo de foco inicial. Padrão `Continuous`.",
+      "default": "AfModeEnum.Continuous"
+     },
+     {
+      "name": "afSpeed",
+      "annotation": "AfSpeedEnum",
+      "description": "velocidade do autofoco. Padrão `Normal`.",
+      "default": "AfSpeedEnum.Normal"
+     }
+    ]
+   },
+   {
+    "kind": "raises",
+    "value": [
+     {
+      "name": "",
+      "annotation": "CameraNotAvailable",
+      "description": "a Picamera2 ou a libcamera não estão instaladas (por exemplo, no PC)."
+     }
+    ]
+   }
+  ],
+  "members": [
+   {
+    "name": "start",
+    "path": "roverlib.plugins.camera.autoFocus.AfCamera.start",
+    "kind": "function",
+    "labels": [],
+    "lineno": 98,
+    "filepath": "roverlib/plugins/camera/autoFocus.py",
+    "parameters": [],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Inicia a captura e aplica o modo e a velocidade de foco."
+     }
+    ]
+   },
+   {
+    "name": "autofocus_cycle",
+    "path": "roverlib.plugins.camera.autoFocus.AfCamera.autofocus_cycle",
+    "kind": "function",
+    "labels": [],
+    "lineno": 127,
+    "filepath": "roverlib/plugins/camera/autoFocus.py",
+    "parameters": [],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Faz um ajuste de foco (um ciclo do autofoco) e mantém a posição encontrada.\n\nColoca a câmera no modo `Auto`, se ainda não estiver."
+     },
+     {
+      "kind": "raises",
+      "value": [
+       {
+        "name": "",
+        "annotation": "CameraNotStart",
+        "description": "a câmera não foi iniciada com `start()`."
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "name": "stop_autofocus_cycle",
+    "path": "roverlib.plugins.camera.autoFocus.AfCamera.stop_autofocus_cycle",
+    "kind": "function",
+    "labels": [],
+    "lineno": 147,
+    "filepath": "roverlib/plugins/camera/autoFocus.py",
+    "parameters": [],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Cancela um ajuste iniciado por `autofocus_cycle()`."
+     },
+     {
+      "kind": "raises",
+      "value": [
+       {
+        "name": "",
+        "annotation": "CameraNotStart",
+        "description": "a câmera não foi iniciada com `start()`."
+       },
+       {
+        "name": "",
+        "annotation": "AutofocusModeInvalid",
+        "description": "a câmera não está no modo `Auto`."
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "name": "set_focus_position",
+    "path": "roverlib.plugins.camera.autoFocus.AfCamera.set_focus_position",
+    "kind": "function",
+    "labels": [],
+    "lineno": 167,
+    "filepath": "roverlib/plugins/camera/autoFocus.py",
+    "parameters": [
+     {
+      "name": "position",
+      "kind": "positional or keyword",
+      "annotation": "float",
+      "default": null
+     }
+    ],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Fixa o foco em uma posição (muda para o modo `Manual`)."
+     },
+     {
+      "kind": "parameters",
+      "value": [
+       {
+        "name": "position",
+        "annotation": "float",
+        "description": "posição da lente, em dioptrias (1 / distância em metros).\n0 foca no infinito; valores maiores focam mais perto. Na IMX519 do Rover,\no exemplo `slideFocus` usa de 0 a 10.",
+        "default": null
+       }
+      ]
+     },
+     {
+      "kind": "raises",
+      "value": [
+       {
+        "name": "",
+        "annotation": "CameraNotStart",
+        "description": "a câmera não foi iniciada com `start()`."
+       },
+       {
+        "name": "",
+        "annotation": "ValueError",
+        "description": "posição negativa."
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "name": "set_afMode",
+    "path": "roverlib.plugins.camera.autoFocus.AfCamera.set_afMode",
+    "kind": "function",
+    "labels": [],
+    "lineno": 195,
+    "filepath": "roverlib/plugins/camera/autoFocus.py",
+    "parameters": [
+     {
+      "name": "mode",
+      "kind": "positional or keyword",
+      "annotation": "AfModeEnum",
+      "default": null
+     }
+    ],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Troca o modo de foco."
+     },
+     {
+      "kind": "parameters",
+      "value": [
+       {
+        "name": "mode",
+        "annotation": "AfModeEnum",
+        "description": "`AfModeEnum.Continuous`, `AfModeEnum.Auto` ou `AfModeEnum.Manual`.",
+        "default": null
+       }
+      ]
+     },
+     {
+      "kind": "raises",
+      "value": [
+       {
+        "name": "",
+        "annotation": "CameraNotStart",
+        "description": "a câmera não foi iniciada com `start()`."
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "name": "set_afSpeed",
+    "path": "roverlib.plugins.camera.autoFocus.AfCamera.set_afSpeed",
+    "kind": "function",
+    "labels": [],
+    "lineno": 215,
+    "filepath": "roverlib/plugins/camera/autoFocus.py",
+    "parameters": [
+     {
+      "name": "speed",
+      "kind": "positional or keyword",
+      "annotation": "AfSpeedEnum",
+      "default": null
+     }
+    ],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Troca a velocidade do autofoco."
+     },
+     {
+      "kind": "parameters",
+      "value": [
+       {
+        "name": "speed",
+        "annotation": "AfSpeedEnum",
+        "description": "`AfSpeedEnum.Normal` ou `AfSpeedEnum.Fast`.",
+        "default": null
+       }
+      ]
+     },
+     {
+      "kind": "raises",
+      "value": [
+       {
+        "name": "",
+        "annotation": "CameraNotStart",
+        "description": "a câmera não foi iniciada com `start()`."
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "name": "lock_focus",
+    "path": "roverlib.plugins.camera.autoFocus.AfCamera.lock_focus",
+    "kind": "function",
+    "labels": [],
+    "lineno": 235,
+    "filepath": "roverlib/plugins/camera/autoFocus.py",
+    "parameters": [],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Trava o foco na posição atual (modo `Manual`)."
+     }
+    ]
+   },
+   {
+    "name": "unlock_focus",
+    "path": "roverlib.plugins.camera.autoFocus.AfCamera.unlock_focus",
+    "kind": "function",
+    "labels": [],
+    "lineno": 241,
+    "filepath": "roverlib/plugins/camera/autoFocus.py",
+    "parameters": [],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Destrava o foco, voltando ao foco contínuo."
+     }
+    ]
+   },
+   {
+    "name": "focus_time",
+    "path": "roverlib.plugins.camera.autoFocus.AfCamera.focus_time",
+    "kind": "function",
+    "labels": [],
+    "lineno": 246,
+    "filepath": "roverlib/plugins/camera/autoFocus.py",
+    "parameters": [
+     {
+      "name": "duration",
+      "kind": "positional or keyword",
+      "annotation": "float",
+      "default": "5"
+     }
+    ],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Deixa o foco contínuo ajustar por um tempo e então trava a posição.\n\nÚtil quando a cena não muda: o foco é ajustado uma vez e não \"respira\" depois."
+     },
+     {
+      "kind": "parameters",
+      "value": [
+       {
+        "name": "duration",
+        "annotation": "float",
+        "description": "tempo de ajuste, em segundos. Padrão 5.",
+        "default": "5"
+       }
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ "roverlib.plugins.camera.webcam.Webcam": {
+  "name": "Webcam",
+  "path": "roverlib.plugins.camera.webcam.Webcam",
+  "kind": "class",
+  "labels": [],
+  "lineno": 7,
+  "filepath": "roverlib/plugins/camera/webcam.py",
+  "bases": [
+   "CameraInterface"
+  ],
+  "parameters": [
+   {
+    "name": "height",
+    "kind": "positional or keyword",
+    "annotation": null,
+    "default": null
+   },
+   {
+    "name": "width",
+    "kind": "positional or keyword",
+    "annotation": null,
+    "default": null
+   },
+   {
+    "name": "fps",
+    "kind": "positional or keyword",
+    "annotation": "int",
+    "default": "30"
+   },
+   {
+    "name": "index",
+    "kind": "positional or keyword",
+    "annotation": "int",
+    "default": "0"
+   },
+   {
+    "name": "format",
+    "kind": "positional or keyword",
+    "annotation": null,
+    "default": "None"
+   }
+  ],
+  "docstring": [
+   {
+    "kind": "text",
+    "value": "Webcam (USB ou integrada ao PC), lida pelo OpenCV.\n\nTem os mesmos métodos básicos da `Camera` (`get_frame()`, `start()`, `stop()`, `cleanup()`),\npor isso um programa escrito para o Rover roda no PC sem mudanças. Os frames vêm em BGR.\nA webcam começa a capturar ao ser criada; `start()` e `stop()` existem só por compatibilidade."
+   },
+   {
+    "kind": "parameters",
+    "value": [
+     {
+      "name": "height",
+      "annotation": "int",
+      "description": "altura desejada dos frames (a webcam pode escolher o tamanho mais próximo).",
+      "default": null
+     },
+     {
+      "name": "width",
+      "annotation": "int",
+      "description": "largura desejada dos frames.",
+      "default": null
+     },
+     {
+      "name": "fps",
+      "annotation": "int",
+      "description": "quadros por segundo desejados. Padrão 30.",
+      "default": "30"
+     },
+     {
+      "name": "index",
+      "annotation": "int",
+      "description": "qual webcam usar, se houver mais de uma. Padrão 0.",
+      "default": "0"
+     },
+     {
+      "name": "format",
+      "annotation": "CameraFormat | str",
+      "description": "formato de cor dos frames. Padrão: BGR. Veja `set_format()`.",
+      "default": "None"
+     }
+    ]
+   }
+  ],
+  "members": [
+   {
+    "name": "get_frame",
+    "path": "roverlib.plugins.camera.webcam.Webcam.get_frame",
+    "kind": "function",
+    "labels": [],
+    "lineno": 34,
+    "filepath": "roverlib/plugins/camera/webcam.py",
+    "parameters": [],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Captura um frame."
+     },
+     {
+      "kind": "returns",
+      "value": [
+       {
+        "name": "",
+        "annotation": null,
+        "description": "numpy.ndarray | None: imagem em BGR (ou no formato de `set_format()`), ou None se a\nwebcam não entregou um frame."
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "name": "get_frame_time",
+    "path": "roverlib.plugins.camera.webcam.Webcam.get_frame_time",
+    "kind": "function",
+    "labels": [],
+    "lineno": 49,
+    "filepath": "roverlib/plugins/camera/webcam.py",
+    "parameters": [],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Captura um frame e o instante da captura."
+     },
+     {
+      "kind": "returns",
+      "value": [
+       {
+        "name": "tuple",
+        "annotation": null,
+        "description": "`(frame, instante)`, com o instante em segundos (`time.time()`)."
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "name": "set_format",
+    "path": "roverlib.plugins.camera.webcam.Webcam.set_format",
+    "kind": "function",
+    "labels": [],
+    "lineno": 58,
+    "filepath": "roverlib/plugins/camera/webcam.py",
+    "parameters": [
+     {
+      "name": "format",
+      "kind": "positional or keyword",
+      "annotation": null,
+      "default": null
+     }
+    ],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Escolhe o formato de cor dos próximos frames (igual a `Camera.set_format()`)."
+     },
+     {
+      "kind": "parameters",
+      "value": [
+       {
+        "name": "format",
+        "annotation": "CameraFormat | str | None",
+        "description": "`CameraFormat.BGR` (padrão), `.RGB`, `.Gray` ou `.HSV`,\nou os nomes `\"bgr\"`, `\"rgb\"`, `\"gray\"` e `\"hsv\"`. None volta ao BGR.",
+        "default": null
+       }
+      ]
+     },
+     {
+      "kind": "raises",
+      "value": [
+       {
+        "name": "",
+        "annotation": "ValueError",
+        "description": "formato desconhecido."
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "name": "isRunning",
+    "path": "roverlib.plugins.camera.webcam.Webcam.isRunning",
+    "kind": "function",
+    "labels": [],
+    "lineno": 71,
+    "filepath": "roverlib/plugins/camera/webcam.py",
+    "parameters": [],
+    "returns": "bool",
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Indica se a webcam está aberta."
+     },
+     {
+      "kind": "returns",
+      "value": [
+       {
+        "name": "bool",
+        "annotation": "bool",
+        "description": "True enquanto a webcam estiver disponível."
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "name": "start",
+    "path": "roverlib.plugins.camera.webcam.Webcam.start",
+    "kind": "function",
+    "labels": [],
+    "lineno": 80,
+    "filepath": "roverlib/plugins/camera/webcam.py",
+    "parameters": [],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Não faz nada: a webcam já captura desde a criação (existe por compatibilidade com `Camera`)."
+     }
+    ]
+   },
+   {
+    "name": "stop",
+    "path": "roverlib.plugins.camera.webcam.Webcam.stop",
+    "kind": "function",
+    "labels": [],
+    "lineno": 84,
+    "filepath": "roverlib/plugins/camera/webcam.py",
+    "parameters": [],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Não faz nada (existe por compatibilidade com `Camera`). Para liberar a webcam, use `cleanup()`."
+     }
+    ]
+   },
+   {
+    "name": "cleanup",
+    "path": "roverlib.plugins.camera.webcam.Webcam.cleanup",
+    "kind": "function",
+    "labels": [],
+    "lineno": 88,
+    "filepath": "roverlib/plugins/camera/webcam.py",
+    "parameters": [],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Libera a webcam."
+     }
+    ]
+   }
+  ]
+ },
+ "roverlib.plugins.camera.formats.CameraFormat": {
+  "name": "CameraFormat",
+  "path": "roverlib.plugins.camera.formats.CameraFormat",
+  "kind": "class",
+  "labels": [],
+  "lineno": 12,
+  "filepath": "roverlib/plugins/camera/formats.py",
+  "bases": [
+   "IntEnum"
+  ],
+  "parameters": [],
+  "docstring": [
+   {
+    "kind": "text",
+    "value": "Formatos de cor em que a câmera pode entregar os frames.\n\n- `BGR`: padrão do OpenCV, sem conversão. Use com `cv2.imshow()` e com `ProcessingImage`.\n- `RGB`: ordem usada por bibliotecas como MediaPipe, PIL e Matplotlib.\n- `Gray`: tons de cinza (um canal só).\n- `HSV`: matiz, saturação e valor; útil para filtrar cores com `cv2.inRange()`."
+   }
+  ],
+  "members": []
+ },
+ "roverlib.modules.movement.robot.Robot": {
+  "name": "Robot",
+  "path": "roverlib.modules.movement.robot.Robot",
+  "kind": "class",
+  "labels": [],
+  "lineno": 15,
+  "filepath": "roverlib/modules/movement/robot.py",
+  "bases": [],
+  "parameters": [
+   {
+    "name": "right",
+    "kind": "positional or keyword",
+    "annotation": "tuple[int, int]",
+    "default": null
+   },
+   {
+    "name": "left",
+    "kind": "positional or keyword",
+    "annotation": "tuple[int, int]",
+    "default": null
+   },
+   {
+    "name": "calibration",
+    "kind": "positional or keyword",
+    "annotation": "Calibration",
+    "default": "None"
+   },
+   {
+    "name": "pwm_frequency",
+    "kind": "positional or keyword",
+    "annotation": "int",
+    "default": "1000"
+   },
+   {
+    "name": "simulate",
+    "kind": "positional or keyword",
+    "annotation": "bool",
+    "default": "None"
+   }
+  ],
+  "docstring": [
+   {
+    "kind": "text",
+    "value": "Comandos básicos de movimento do Rover.\nFornece métodos intuitivos para controlar o movimento.\n\nFora da Raspberry Pi (ou com simulate=True / ROVER_SIMULATE=1) os motores\nsão simulados: os comandos são exibidos no terminal e nada é enviado à GPIO."
+   },
+   {
+    "kind": "text",
+    "value": "Inicia os drivers para os motores."
+   },
+   {
+    "kind": "parameters",
+    "value": [
+     {
+      "name": "left",
+      "annotation": "tuple[int, int]",
+      "description": "Pinos da GPIO conectados a ponte-H para o motor da esquerda.",
+      "default": null
+     },
+     {
+      "name": "right",
+      "annotation": "tuple[int, int]",
+      "description": "Pinos da GPIO conectados a ponte-H para o motor da direita.",
+      "default": null
+     },
+     {
+      "name": "calibration",
+      "annotation": "Calibration",
+      "description": "Calibração para os motores. Por padrão Calibration(1, 1)",
+      "default": "None"
+     },
+     {
+      "name": "pwm_frequency",
+      "annotation": "int",
+      "description": "Frequência do sinal PWM em Hz(padrão: 1000Hz). Por padrão 1000.",
+      "default": "1000"
+     },
+     {
+      "name": "simulate",
+      "annotation": "bool",
+      "description": "\nNone (padrão) -> usa os motores reais se a GPIO estiver disponível; senão, simula.\nTrue -> sempre simula.\nFalse -> exige os motores reais (erro se a GPIO não estiver disponível).",
+      "default": "None"
+     }
+    ]
+   }
+  ],
+  "members": [
+   {
+    "name": "forward",
+    "path": "roverlib.modules.movement.robot.Robot.forward",
+    "kind": "function",
+    "labels": [],
+    "lineno": 72,
+    "filepath": "roverlib/modules/movement/robot.py",
+    "parameters": [
+     {
+      "name": "speed",
+      "kind": "positional or keyword",
+      "annotation": null,
+      "default": "50"
+     },
+     {
+      "name": "duration",
+      "kind": "positional or keyword",
+      "annotation": null,
+      "default": "None"
+     }
+    ],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Move o Rover para frente."
+     },
+     {
+      "kind": "parameters",
+      "value": [
+       {
+        "name": "speed",
+        "annotation": "float",
+        "description": "Velocidade de 0 a 100",
+        "default": "50"
+       },
+       {
+        "name": "duration",
+        "annotation": "float",
+        "description": "Duração em segundos. Se None, move indefinidamente.",
+        "default": "None"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "name": "backward",
+    "path": "roverlib.modules.movement.robot.Robot.backward",
+    "kind": "function",
+    "labels": [],
+    "lineno": 93,
+    "filepath": "roverlib/modules/movement/robot.py",
+    "parameters": [
+     {
+      "name": "speed",
+      "kind": "positional or keyword",
+      "annotation": null,
+      "default": "50"
+     },
+     {
+      "name": "duration",
+      "kind": "positional or keyword",
+      "annotation": null,
+      "default": "None"
+     }
+    ],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Move o Rover para trás."
+     },
+     {
+      "kind": "parameters",
+      "value": [
+       {
+        "name": "speed",
+        "annotation": "float",
+        "description": "Velocidade de 0 a 100",
+        "default": "50"
+       },
+       {
+        "name": "duration",
+        "annotation": "float",
+        "description": "Duração em segundos. Se None, move indefinidamente.",
+        "default": "None"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "name": "turn_left",
+    "path": "roverlib.modules.movement.robot.Robot.turn_left",
+    "kind": "function",
+    "labels": [],
+    "lineno": 114,
+    "filepath": "roverlib/modules/movement/robot.py",
+    "parameters": [
+     {
+      "name": "speed",
+      "kind": "positional or keyword",
+      "annotation": null,
+      "default": "50"
+     },
+     {
+      "name": "duration",
+      "kind": "positional or keyword",
+      "annotation": null,
+      "default": "None"
+     }
+    ],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Gira o Rover para a esquerda no próprio eixo."
+     },
+     {
+      "kind": "parameters",
+      "value": [
+       {
+        "name": "speed",
+        "annotation": "float",
+        "description": "Velocidade de 0 a 100",
+        "default": "50"
+       },
+       {
+        "name": "duration",
+        "annotation": "float",
+        "description": "Duração em segundos. Se None, gira indefinidamente.",
+        "default": "None"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "name": "turn_right",
+    "path": "roverlib.modules.movement.robot.Robot.turn_right",
+    "kind": "function",
+    "labels": [],
+    "lineno": 131,
+    "filepath": "roverlib/modules/movement/robot.py",
+    "parameters": [
+     {
+      "name": "speed",
+      "kind": "positional or keyword",
+      "annotation": null,
+      "default": "50"
+     },
+     {
+      "name": "duration",
+      "kind": "positional or keyword",
+      "annotation": null,
+      "default": "None"
+     }
+    ],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Gira o Rover para a direita no próprio eixo."
+     },
+     {
+      "kind": "parameters",
+      "value": [
+       {
+        "name": "speed",
+        "annotation": "float",
+        "description": "Velocidade de 0 a 100",
+        "default": "50"
+       },
+       {
+        "name": "duration",
+        "annotation": "float",
+        "description": "Duração em segundos. Se None, gira indefinidamente.",
+        "default": "None"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "name": "move",
+    "path": "roverlib.modules.movement.robot.Robot.move",
+    "kind": "function",
+    "labels": [],
+    "lineno": 148,
+    "filepath": "roverlib/modules/movement/robot.py",
+    "parameters": [
+     {
+      "name": "speed_right",
+      "kind": "positional or keyword",
+      "annotation": "float",
+      "default": null
+     },
+     {
+      "name": "speed_left",
+      "kind": "positional or keyword",
+      "annotation": "float",
+      "default": null
+     },
+     {
+      "name": "duration",
+      "kind": "positional or keyword",
+      "annotation": null,
+      "default": "None"
+     }
+    ],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Move os motores individualmente de acordo com a velocidade. \nVelociade positiva indica rotação para frente.\nVelocidade negativa indica rotação para trás."
+     },
+     {
+      "kind": "parameters",
+      "value": [
+       {
+        "name": "speed_right",
+        "annotation": "float",
+        "description": "velocidade do motor direito, de -100 a 100.",
+        "default": null
+       },
+       {
+        "name": "speed_left",
+        "annotation": "float",
+        "description": "velocidade do motor esquerdo, de -100 a 100.",
+        "default": null
+       },
+       {
+        "name": "duration",
+        "annotation": "float",
+        "description": "duração do movimento, em segundos; ao final, os motores param.\nSe None (padrão), o movimento continua até o próximo comando.",
+        "default": "None"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "name": "turn_degrees",
+    "path": "roverlib.modules.movement.robot.Robot.turn_degrees",
+    "kind": "function",
+    "labels": [],
+    "lineno": 196,
+    "filepath": "roverlib/modules/movement/robot.py",
+    "parameters": [
+     {
+      "name": "degrees",
+      "kind": "positional or keyword",
+      "annotation": "float",
+      "default": null
+     },
+     {
+      "name": "time_to_turn",
+      "kind": "positional or keyword",
+      "annotation": "float",
+      "default": "12"
+     },
+     {
+      "name": "turn_speed",
+      "kind": "positional or keyword",
+      "annotation": "float",
+      "default": "55"
+     }
+    ],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Gira o robô no próprio eixo por uma quantidade de graus, estimada por tempo.\nPositivo para a direita, negativo para a esquerda."
+     },
+     {
+      "kind": "parameters",
+      "value": [
+       {
+        "name": "degrees",
+        "annotation": "float",
+        "description": "ângulo do giro em graus (ex.: 90 ou -45).",
+        "default": null
+       },
+       {
+        "name": "time_to_turn",
+        "annotation": "float",
+        "description": "tempo, em segundos, que o Rover leva para girar 360°\nna velocidade `turn_speed`. Meça no seu Rover para obter giros precisos.",
+        "default": "12"
+       },
+       {
+        "name": "turn_speed",
+        "annotation": "float",
+        "description": "velocidade usada no giro (0 a 100).",
+        "default": "55"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "name": "stop",
+    "path": "roverlib.modules.movement.robot.Robot.stop",
+    "kind": "function",
+    "labels": [],
+    "lineno": 214,
+    "filepath": "roverlib/modules/movement/robot.py",
+    "parameters": [],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Para o Rover imediatamente."
+     }
+    ]
+   },
+   {
+    "name": "cleanup",
+    "path": "roverlib.modules.movement.robot.Robot.cleanup",
+    "kind": "function",
+    "labels": [],
+    "lineno": 219,
+    "filepath": "roverlib/modules/movement/robot.py",
+    "parameters": [],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Libera recursos do driver."
+     }
+    ]
+   }
+  ]
+ },
+ "roverlib.modules.movement.motorCalibration.Calibration": {
+  "name": "Calibration",
+  "path": "roverlib.modules.movement.motorCalibration.Calibration",
+  "kind": "class",
+  "labels": [],
+  "lineno": 5,
+  "filepath": "roverlib/modules/movement/motorCalibration.py",
+  "bases": [],
+  "parameters": [
+   {
+    "name": "right",
+    "kind": "positional or keyword",
+    "annotation": "float",
+    "default": null
+   },
+   {
+    "name": "left",
+    "kind": "positional or keyword",
+    "annotation": "float",
+    "default": null
+   }
+  ],
+  "docstring": [
+   {
+    "kind": "text",
+    "value": "Compensa diferenças de velocidade entre os dois motores.\n\nDois motores iguais raramente giram exatamente na mesma velocidade, e o Rover puxa\npara um lado em `forward()`. Cada lado recebe um coeficiente que multiplica a velocidade\npedida: com `Calibration(right=0.95, left=1)`, o motor direito gira a 95% do pedido."
+   },
+   {
+    "kind": "parameters",
+    "value": [
+     {
+      "name": "right",
+      "annotation": "float",
+      "description": "coeficiente do motor direito (1 = sem correção).",
+      "default": null
+     },
+     {
+      "name": "left",
+      "annotation": "float",
+      "description": "coeficiente do motor esquerdo (1 = sem correção).",
+      "default": null
+     }
+    ]
+   }
+  ],
+  "members": [
+   {
+    "name": "get_calibration",
+    "path": "roverlib.modules.movement.motorCalibration.Calibration.get_calibration",
+    "kind": "function",
+    "labels": [],
+    "lineno": 24,
+    "filepath": "roverlib/modules/movement/motorCalibration.py",
+    "parameters": [
+     {
+      "name": "left_speed",
+      "kind": "positional or keyword",
+      "annotation": "float",
+      "default": null
+     },
+     {
+      "name": "right_speed",
+      "kind": "positional or keyword",
+      "annotation": "float",
+      "default": null
+     }
+    ],
+    "returns": "tuple[float, float]",
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Aplica os coeficientes às velocidades pedidas."
+     },
+     {
+      "kind": "parameters",
+      "value": [
+       {
+        "name": "left_speed",
+        "annotation": "float",
+        "description": "velocidade pedida para o motor esquerdo.",
+        "default": null
+       },
+       {
+        "name": "right_speed",
+        "annotation": "float",
+        "description": "velocidade pedida para o motor direito.",
+        "default": null
+       }
+      ]
+     },
+     {
+      "kind": "returns",
+      "value": [
+       {
+        "name": "tuple",
+        "annotation": "tuple[float, float]",
+        "description": "`(direita_calibrada, esquerda_calibrada)`. Atenção: a ordem é **direita, esquerda**,\na inversa dos argumentos."
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "name": "set_calibration",
+    "path": "roverlib.modules.movement.motorCalibration.Calibration.set_calibration",
+    "kind": "function",
+    "labels": [],
+    "lineno": 41,
+    "filepath": "roverlib/modules/movement/motorCalibration.py",
+    "parameters": [
+     {
+      "name": "right",
+      "kind": "positional or keyword",
+      "annotation": "float",
+      "default": null
+     },
+     {
+      "name": "left",
+      "kind": "positional or keyword",
+      "annotation": "float",
+      "default": null
+     }
+    ],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Troca os coeficientes de calibração."
+     },
+     {
+      "kind": "parameters",
+      "value": [
+       {
+        "name": "right",
+        "annotation": "float",
+        "description": "novo coeficiente do motor direito.",
+        "default": null
+       },
+       {
+        "name": "left",
+        "annotation": "float",
+        "description": "novo coeficiente do motor esquerdo.",
+        "default": null
+       }
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ "roverlib.modules.movement.PID.PID": {
+  "name": "PID",
+  "path": "roverlib.modules.movement.PID.PID",
+  "kind": "class",
+  "labels": [],
+  "lineno": 4,
+  "filepath": "roverlib/modules/movement/PID.py",
+  "bases": [],
+  "parameters": [
+   {
+    "name": "kp",
+    "kind": "positional or keyword",
+    "annotation": "float",
+    "default": "1"
+   },
+   {
+    "name": "ki",
+    "kind": "positional or keyword",
+    "annotation": "float",
+    "default": "1"
+   },
+   {
+    "name": "kd",
+    "kind": "positional or keyword",
+    "annotation": "float",
+    "default": "1"
+   },
+   {
+    "name": "max_I",
+    "kind": "positional or keyword",
+    "annotation": "float",
+    "default": "100"
+   }
+  ],
+  "docstring": [
+   {
+    "kind": "text",
+    "value": "Controlador P, PD ou PID discreto.\n\nA cada chamada, o controlador recebe o erro atual (referência menos medida) e\ndevolve a correção:\n\n    u = kp * e  +  ki * integral(e dt)  +  kd * de/dt\n\nO intervalo entre chamadas (dt) é medido com o relógio do sistema, ou pode ser\ninformado (útil em simulações, que não rodam em tempo real).\n\nExemplo:\n\n```python\nfrom roverlib import PID\n\npid = PID(kp=0.4, ki=0.1, kd=0.05)\ncorrecao = pid.controller_PID(erro)\nrobot.move(speed_right=base + correcao, speed_left=base - correcao)\n```"
+   },
+   {
+    "kind": "parameters",
+    "value": [
+     {
+      "name": "kp",
+      "annotation": "float",
+      "description": "ganho proporcional.",
+      "default": "1"
+     },
+     {
+      "name": "ki",
+      "annotation": "float",
+      "description": "ganho integral.",
+      "default": "1"
+     },
+     {
+      "name": "kd",
+      "annotation": "float",
+      "description": "ganho derivativo.",
+      "default": "1"
+     },
+     {
+      "name": "max_I",
+      "annotation": "float",
+      "description": "limite do valor absoluto da integral do erro (anti-windup):\na integral fica entre -max_I e max_I.",
+      "default": "100"
+     }
+    ]
+   }
+  ],
+  "members": [
+   {
+    "name": "controller_P",
+    "path": "roverlib.modules.movement.PID.PID.controller_P",
+    "kind": "function",
+    "labels": [],
+    "lineno": 58,
+    "filepath": "roverlib/modules/movement/PID.py",
+    "parameters": [
+     {
+      "name": "error",
+      "kind": "positional or keyword",
+      "annotation": "float",
+      "default": null
+     }
+    ],
+    "returns": "float",
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Controle proporcional: `kp * erro`."
+     },
+     {
+      "kind": "parameters",
+      "value": [
+       {
+        "name": "error",
+        "annotation": "float",
+        "description": "erro atual.",
+        "default": null
+       }
+      ]
+     },
+     {
+      "kind": "returns",
+      "value": [
+       {
+        "name": "float",
+        "annotation": "float",
+        "description": "a correção."
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "name": "controller_PD",
+    "path": "roverlib.modules.movement.PID.PID.controller_PD",
+    "kind": "function",
+    "labels": [],
+    "lineno": 70,
+    "filepath": "roverlib/modules/movement/PID.py",
+    "parameters": [
+     {
+      "name": "error",
+      "kind": "positional or keyword",
+      "annotation": "float",
+      "default": null
+     },
+     {
+      "name": "dt",
+      "kind": "positional or keyword",
+      "annotation": "float",
+      "default": "None"
+     }
+    ],
+    "returns": "float",
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Controle proporcional-derivativo: `kp * erro + kd * d(erro)/dt`.\n\nNa primeira chamada (ou logo após `reset()`) ainda não há erro anterior,\ne a correção é só a parcela proporcional."
+     },
+     {
+      "kind": "parameters",
+      "value": [
+       {
+        "name": "error",
+        "annotation": "float",
+        "description": "erro atual.",
+        "default": null
+       },
+       {
+        "name": "dt",
+        "annotation": "float",
+        "description": "tempo desde a chamada anterior, em segundos.\nSe omitido, é medido com o relógio do sistema.",
+        "default": "None"
+       }
+      ]
+     },
+     {
+      "kind": "returns",
+      "value": [
+       {
+        "name": "float",
+        "annotation": "float",
+        "description": "a correção."
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "name": "controller_PID",
+    "path": "roverlib.modules.movement.PID.PID.controller_PID",
+    "kind": "function",
+    "labels": [],
+    "lineno": 91,
+    "filepath": "roverlib/modules/movement/PID.py",
+    "parameters": [
+     {
+      "name": "error",
+      "kind": "positional or keyword",
+      "annotation": "float",
+      "default": null
+     },
+     {
+      "name": "dt",
+      "kind": "positional or keyword",
+      "annotation": "float",
+      "default": "None"
+     }
+    ],
+    "returns": "float",
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Controle proporcional-integral-derivativo.\n\nA integral do erro fica limitada a `[-max_I, max_I]` (anti-windup). Na primeira\nchamada (ou logo após `reset()`), sem `dt` informado, a correção é só a parcela\nproporcional."
+     },
+     {
+      "kind": "parameters",
+      "value": [
+       {
+        "name": "error",
+        "annotation": "float",
+        "description": "erro atual.",
+        "default": null
+       },
+       {
+        "name": "dt",
+        "annotation": "float",
+        "description": "tempo desde a chamada anterior, em segundos.\nSe omitido, é medido com o relógio do sistema.",
+        "default": "None"
+       }
+      ]
+     },
+     {
+      "kind": "returns",
+      "value": [
+       {
+        "name": "float",
+        "annotation": "float",
+        "description": "a correção."
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "name": "set_kp",
+    "path": "roverlib.modules.movement.PID.PID.set_kp",
+    "kind": "function",
+    "labels": [],
+    "lineno": 118,
+    "filepath": "roverlib/modules/movement/PID.py",
+    "parameters": [
+     {
+      "name": "kp",
+      "kind": "positional or keyword",
+      "annotation": null,
+      "default": null
+     }
+    ],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Troca o ganho proporcional."
+     }
+    ]
+   },
+   {
+    "name": "set_ki",
+    "path": "roverlib.modules.movement.PID.PID.set_ki",
+    "kind": "function",
+    "labels": [],
+    "lineno": 122,
+    "filepath": "roverlib/modules/movement/PID.py",
+    "parameters": [
+     {
+      "name": "ki",
+      "kind": "positional or keyword",
+      "annotation": null,
+      "default": null
+     }
+    ],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Troca o ganho integral."
+     }
+    ]
+   },
+   {
+    "name": "set_kd",
+    "path": "roverlib.modules.movement.PID.PID.set_kd",
+    "kind": "function",
+    "labels": [],
+    "lineno": 126,
+    "filepath": "roverlib/modules/movement/PID.py",
+    "parameters": [
+     {
+      "name": "kd",
+      "kind": "positional or keyword",
+      "annotation": null,
+      "default": null
+     }
+    ],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Troca o ganho derivativo."
+     }
+    ]
+   },
+   {
+    "name": "reset",
+    "path": "roverlib.modules.movement.PID.PID.reset",
+    "kind": "function",
+    "labels": [],
+    "lineno": 130,
+    "filepath": "roverlib/modules/movement/PID.py",
+    "parameters": [],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Zera a integral e o erro anterior; a próxima chamada é tratada como a primeira."
+     }
+    ]
+   }
+  ]
+ },
+ "roverlib.plugins.motor.motorDriver.MotorDriver": {
+  "name": "MotorDriver",
+  "path": "roverlib.plugins.motor.motorDriver.MotorDriver",
+  "kind": "class",
+  "labels": [],
+  "lineno": 17,
+  "filepath": "roverlib/plugins/motor/motorDriver.py",
+  "bases": [
+   "MotorInterface"
+  ],
+  "parameters": [
+   {
+    "name": "pins",
+    "kind": "positional or keyword",
+    "annotation": "tuple[int, int]",
+    "default": null
+   },
+   {
+    "name": "pwm_frequency",
+    "kind": "positional or keyword",
+    "annotation": null,
+    "default": "1000"
+   }
+  ],
+  "docstring": [
+   {
+    "kind": "text",
+    "value": "Controla um motor DC ligado a uma ponte-H L298N, pelo plugin `pin`.\n\nO motor é ligado a duas entradas da ponte-H (IN1/IN2 ou IN3/IN4). A velocidade é o\nciclo de trabalho do PWM em uma delas; a outra fica em 0, e qual delas recebe o PWM\ndefine o sentido.\n\nExemplo:\n\n```python\nmotor = MotorDriver(pins=(17, 26))\nmotor.initialize()\nmotor.set_movement(50, \"FORWARD\")\nmotor.cleanup()\n```\n\nNormalmente o motor é usado pelo `Robot`, que cria os dois motores e cai no\n`VirtualMotor` fora da Raspberry Pi."
+   },
+   {
+    "kind": "parameters",
+    "value": [
+     {
+      "name": "pins",
+      "annotation": "tuple[int, int]",
+      "description": "pinos GPIO (numeração BCM) ligados às duas entradas da ponte-H.",
+      "default": null
+     },
+     {
+      "name": "pwm_frequency",
+      "annotation": "int",
+      "description": "frequência do PWM, em Hz. Padrão 1000.",
+      "default": "1000"
+     }
+    ]
+   },
+   {
+    "kind": "raises",
+    "value": [
+     {
+      "name": "",
+      "annotation": "MotorCreationError",
+      "description": "o plugin `pin` não está disponível (PC, ou módulo nativo não compilado)."
+     }
+    ]
+   }
+  ],
+  "members": [
+   {
+    "name": "initialize",
+    "path": "roverlib.plugins.motor.motorDriver.MotorDriver.initialize",
+    "kind": "function",
+    "labels": [],
+    "lineno": 59,
+    "filepath": "roverlib/plugins/motor/motorDriver.py",
+    "parameters": [],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Configura os pinos GPIO e inicia os sinais PWM."
+     }
+    ]
+   },
+   {
+    "name": "set_movement",
+    "path": "roverlib.plugins.motor.motorDriver.MotorDriver.set_movement",
+    "kind": "function",
+    "labels": [],
+    "lineno": 70,
+    "filepath": "roverlib/plugins/motor/motorDriver.py",
+    "parameters": [
+     {
+      "name": "speed",
+      "kind": "positional or keyword",
+      "annotation": "float",
+      "default": null
+     },
+     {
+      "name": "direction",
+      "kind": "positional or keyword",
+      "annotation": null,
+      "default": "'FORWARD'"
+     }
+    ],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Gira o motor com uma velocidade e um sentido."
+     },
+     {
+      "kind": "parameters",
+      "value": [
+       {
+        "name": "speed",
+        "annotation": "float",
+        "description": "velocidade de 0 a 100 (porcentagem do PWM). Valores acima de 100 são limitados.",
+        "default": null
+       },
+       {
+        "name": "direction",
+        "annotation": "str",
+        "description": "`\"FORWARD\"` (frente), `\"BACKWARD\"` (trás) ou `\"STOP\"`. Aceita minúsculas. Padrão `\"FORWARD\"`.",
+        "default": "'FORWARD'"
+       }
+      ]
+     },
+     {
+      "kind": "raises",
+      "value": [
+       {
+        "name": "",
+        "annotation": "UninitializedMotorError",
+        "description": "o motor não foi inicializado com `initialize()`."
+       },
+       {
+        "name": "",
+        "annotation": "DirectionInvalidMotorError",
+        "description": "sentido diferente dos três aceitos."
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "name": "stop",
+    "path": "roverlib.plugins.motor.motorDriver.MotorDriver.stop",
+    "kind": "function",
+    "labels": [],
+    "lineno": 102,
+    "filepath": "roverlib/plugins/motor/motorDriver.py",
+    "parameters": [],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Para o motor (as duas entradas em 0)."
+     }
+    ]
+   },
+   {
+    "name": "cleanup",
+    "path": "roverlib.plugins.motor.motorDriver.MotorDriver.cleanup",
+    "kind": "function",
+    "labels": [],
+    "lineno": 106,
+    "filepath": "roverlib/plugins/motor/motorDriver.py",
+    "parameters": [],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Para o motor e libera os pinos GPIO. Pode ser chamado mais de uma vez."
+     }
+    ]
+   }
+  ]
+ },
+ "roverlib.plugins.motor.virtual.VirtualMotor": {
+  "name": "VirtualMotor",
+  "path": "roverlib.plugins.motor.virtual.VirtualMotor",
+  "kind": "class",
+  "labels": [],
+  "lineno": 11,
+  "filepath": "roverlib/plugins/motor/virtual.py",
+  "bases": [
+   "MotorInterface"
+  ],
+  "parameters": [
+   {
+    "name": "pins",
+    "kind": "positional or keyword",
+    "annotation": "tuple[int, int]",
+    "default": null
+   },
+   {
+    "name": "tag",
+    "kind": "positional or keyword",
+    "annotation": "str",
+    "default": "'motor'"
+   },
+   {
+    "name": "pwm_frequency",
+    "kind": "positional or keyword",
+    "annotation": null,
+    "default": "1000"
+   },
+   {
+    "name": "verbose",
+    "kind": "positional or keyword",
+    "annotation": "bool",
+    "default": "True"
+   }
+  ],
+  "docstring": [
+   {
+    "kind": "text",
+    "value": "Classe para simulação do funcionamento de motores.\nUsada automaticamente pelo Robot quando não há Raspberry Pi\n(ou quando o modo simulação é pedido).\n\nO estado atual fica disponível em `speed` e `direction`, o que\npermite testar programas sem o Rover."
+   },
+   {
+    "kind": "text",
+    "value": "Inicializa o driver para um motor."
+   },
+   {
+    "kind": "parameters",
+    "value": [
+     {
+      "name": "pins",
+      "annotation": "tuple[int, int]",
+      "description": "tupla com a indicação dos pinos da gpio que estão conectados nos entradas da ponte-H.",
+      "default": null
+     },
+     {
+      "name": "tag",
+      "annotation": "str",
+      "description": "nome do motor, usado nas mensagens (ex.: \"esquerdo\").",
+      "default": "'motor'"
+     },
+     {
+      "name": "pwm_frequency",
+      "annotation": "int",
+      "description": "Frequência do sinal PWM em Hz (padrão: 1000Hz)",
+      "default": "1000"
+     },
+     {
+      "name": "verbose",
+      "annotation": "bool",
+      "description": "Se True, imprime no terminal quando o movimento do motor muda.",
+      "default": "True"
+     }
+    ]
+   }
+  ],
+  "members": [
+   {
+    "name": "initialize",
+    "path": "roverlib.plugins.motor.virtual.VirtualMotor.initialize",
+    "kind": "function",
+    "labels": [],
+    "lineno": 44,
+    "filepath": "roverlib/plugins/motor/virtual.py",
+    "parameters": [],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Simula a configuração dos pinos GPIO e dos sinais PWM."
+     }
+    ]
+   },
+   {
+    "name": "set_movement",
+    "path": "roverlib.plugins.motor.virtual.VirtualMotor.set_movement",
+    "kind": "function",
+    "labels": [],
+    "lineno": 52,
+    "filepath": "roverlib/plugins/motor/virtual.py",
+    "parameters": [
+     {
+      "name": "speed",
+      "kind": "positional or keyword",
+      "annotation": "float",
+      "default": null
+     },
+     {
+      "name": "direction",
+      "kind": "positional or keyword",
+      "annotation": null,
+      "default": "'FORWARD'"
+     }
+    ],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Gira o motor com uma velocidade e um sentido."
+     },
+     {
+      "kind": "parameters",
+      "value": [
+       {
+        "name": "speed",
+        "annotation": "float",
+        "description": "velocidade de 0 a 100 (porcentagem do PWM). Valores acima de 100 são limitados.",
+        "default": null
+       },
+       {
+        "name": "direction",
+        "annotation": "str",
+        "description": "`\"FORWARD\"` (frente), `\"BACKWARD\"` (trás) ou `\"STOP\"`. Aceita minúsculas. Padrão `\"FORWARD\"`.",
+        "default": "'FORWARD'"
+       }
+      ]
+     },
+     {
+      "kind": "raises",
+      "value": [
+       {
+        "name": "",
+        "annotation": "UninitializedMotorError",
+        "description": "o motor não foi inicializado com `initialize()`."
+       },
+       {
+        "name": "",
+        "annotation": "DirectionInvalidMotorError",
+        "description": "sentido diferente dos três aceitos."
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "name": "stop",
+    "path": "roverlib.plugins.motor.virtual.VirtualMotor.stop",
+    "kind": "function",
+    "labels": [],
+    "lineno": 87,
+    "filepath": "roverlib/plugins/motor/virtual.py",
+    "parameters": [],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Para a rotação do motor"
+     }
+    ]
+   },
+   {
+    "name": "cleanup",
+    "path": "roverlib.plugins.motor.virtual.VirtualMotor.cleanup",
+    "kind": "function",
+    "labels": [],
+    "lineno": 91,
+    "filepath": "roverlib/plugins/motor/virtual.py",
+    "parameters": [],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Libera recursos GPIO e para os motores."
+     }
+    ]
+   }
+  ]
+ },
+ "roverlib.modules.pan_tilt.pan_tilt.PanTilt": {
+  "name": "PanTilt",
+  "path": "roverlib.modules.pan_tilt.pan_tilt.PanTilt",
+  "kind": "class",
+  "labels": [],
+  "lineno": 25,
+  "filepath": "roverlib/modules/pan_tilt/pan_tilt.py",
+  "bases": [],
+  "parameters": [
+   {
+    "name": "pan_channel",
+    "kind": "positional or keyword",
+    "annotation": "int",
+    "default": "0"
+   },
+   {
+    "name": "tilt_channel",
+    "kind": "positional or keyword",
+    "annotation": "int",
+    "default": "1"
+   },
+   {
+    "name": "address",
+    "kind": "positional or keyword",
+    "annotation": "int",
+    "default": "64"
+   },
+   {
+    "name": "tilt_min",
+    "kind": "positional or keyword",
+    "annotation": "float",
+    "default": "0"
+   },
+   {
+    "name": "tilt_max",
+    "kind": "positional or keyword",
+    "annotation": "float",
+    "default": "180"
+   },
+   {
+    "name": "tilt_center",
+    "kind": "positional or keyword",
+    "annotation": "float",
+    "default": "90"
+   },
+   {
+    "name": "tilt_invert",
+    "kind": "positional or keyword",
+    "annotation": "bool",
+    "default": "False"
+   },
+   {
+    "name": "pan_trim",
+    "kind": "positional or keyword",
+    "annotation": "float",
+    "default": "0.0"
+   },
+   {
+    "name": "pan_invert",
+    "kind": "positional or keyword",
+    "annotation": "bool",
+    "default": "False"
+   },
+   {
+    "name": "pan_min",
+    "kind": "positional or keyword",
+    "annotation": "float",
+    "default": "-50"
+   },
+   {
+    "name": "pan_max",
+    "kind": "positional or keyword",
+    "annotation": "float",
+    "default": "50"
+   },
+   {
+    "name": "pan_degrees_per_second",
+    "kind": "positional or keyword",
+    "annotation": null,
+    "default": "125"
+   },
+   {
+    "name": "pan_calibration_speed",
+    "kind": "positional or keyword",
+    "annotation": "float",
+    "default": "20"
+   },
+   {
+    "name": "pan_pulse",
+    "kind": "positional or keyword",
+    "annotation": "tuple",
+    "default": "(500, 2500)"
+   },
+   {
+    "name": "tilt_pulse",
+    "kind": "positional or keyword",
+    "annotation": "tuple",
+    "default": "(500, 2500)"
+   },
+   {
+    "name": "hold_tilt",
+    "kind": "positional or keyword",
+    "annotation": "bool",
+    "default": "True"
+   },
+   {
+    "name": "simulate",
+    "kind": "positional or keyword",
+    "annotation": "bool",
+    "default": "None"
+   }
+  ],
+  "docstring": [
+   {
+    "kind": "text",
+    "value": "Movimenta a câmera do Rover.\n\nExemplo:\n\n```python\nwith PanTilt() as camera_mount:\n    camera_mount.tilt_to(60)                 # inclina para 60°\n    camera_mount.pan_to(30)                  # gira até ~30° à direita\n    camera_mount.pan_left(20, duration=0.3)  # gira para a esquerda por 0,3 s\n    camera_mount.center()                    # volta a olhar para a frente\n```\n\nPosição do PAN: 0° é a câmera olhando para a frente do Rover; positivo é a direita.\nO programa deve começar com a câmera de frente (o `cleanup()` a deixa assim ao terminar).\n\nPelo Rover, é acessado como `rover.pan_tilt`."
+   },
+   {
+    "kind": "parameters",
+    "value": [
+     {
+      "name": "pan_channel",
+      "annotation": "int",
+      "description": "canal do PCA9685 do servo PAN (360°). Padrão 0.",
+      "default": "0"
+     },
+     {
+      "name": "tilt_channel",
+      "annotation": "int",
+      "description": "canal do PCA9685 do servo TILT (180°). Padrão 1.",
+      "default": "1"
+     },
+     {
+      "name": "address",
+      "annotation": "int",
+      "description": "endereço I²C do PCA9685. Padrão 0x40.",
+      "default": "64"
+     },
+     {
+      "name": "tilt_min",
+      "annotation": "float",
+      "description": "menor ângulo permitido do TILT (protege o suporte). Padrão 0.",
+      "default": "0"
+     },
+     {
+      "name": "tilt_max",
+      "annotation": "float",
+      "description": "maior ângulo permitido do TILT. Padrão 180.",
+      "default": "180"
+     },
+     {
+      "name": "tilt_center",
+      "annotation": "float",
+      "description": "ângulo do TILT com a câmera olhando para frente. Padrão 90.",
+      "default": "90"
+     },
+     {
+      "name": "tilt_invert",
+      "annotation": "bool",
+      "description": "inverte o sentido do TILT, se `tilt_up()` abaixar a câmera.",
+      "default": "False"
+     },
+     {
+      "name": "pan_trim",
+      "annotation": "float",
+      "description": "velocidade (-1.0 a 1.0) em que o servo PAN fica realmente parado.\nAjuste se a câmera girar sozinha devagar após `stop_pan()`.",
+      "default": "0.0"
+     },
+     {
+      "name": "pan_invert",
+      "annotation": "bool",
+      "description": "inverte o sentido do PAN, se `pan_right()` girar para a esquerda.",
+      "default": "False"
+     },
+     {
+      "name": "pan_min",
+      "annotation": "float",
+      "description": "limite do giro para a esquerda, em graus (negativo). None = sem limite.",
+      "default": "-50"
+     },
+     {
+      "name": "pan_max",
+      "annotation": "float",
+      "description": "limite do giro para a direita, em graus. None = sem limite.",
+      "default": "50"
+     },
+     {
+      "name": "pan_degrees_per_second",
+      "annotation": "float | tuple",
+      "description": "graus por segundo que o PAN gira com a\nvelocidade `pan_calibration_speed`. Um número vale para os dois sentidos;\num par `(direita, esquerda)` corrige servos mais rápidos em um sentido.\nMeça no seu Rover: é o que torna a posição estimada confiável.",
+      "default": "125"
+     },
+     {
+      "name": "pan_calibration_speed",
+      "annotation": "float",
+      "description": "velocidade (0 a 100) usada na medição acima.\nTambém é a velocidade padrão de `pan_to()`, a mais precisa.",
+      "default": "20"
+     },
+     {
+      "name": "pan_pulse",
+      "annotation": "tuple",
+      "description": "pulsos mínimo e máximo do servo PAN, em microssegundos.",
+      "default": "(500, 2500)"
+     },
+     {
+      "name": "tilt_pulse",
+      "annotation": "tuple",
+      "description": "pulsos mínimo e máximo do servo TILT, em microssegundos.",
+      "default": "(500, 2500)"
+     },
+     {
+      "name": "hold_tilt",
+      "annotation": "bool",
+      "description": "se True (padrão), o TILT continua segurando a câmera no centro\ndepois do `cleanup()`. Sem sinal, o peso da câmera a faria cair.",
+      "default": "True"
+     },
+     {
+      "name": "simulate",
+      "annotation": "bool",
+      "description": "\nNone (padrão) -> usa o PCA9685 se disponível; senão, simula.\nTrue -> sempre simula.\nFalse -> exige o hardware (erro se o PCA9685 não estiver disponível).",
+      "default": "None"
+     }
+    ]
+   }
+  ],
+  "members": [
+   {
+    "name": "pan",
+    "path": "roverlib.modules.pan_tilt.pan_tilt.PanTilt.pan",
+    "kind": "function",
+    "labels": [],
+    "lineno": 164,
+    "filepath": "roverlib/modules/pan_tilt/pan_tilt.py",
+    "parameters": [
+     {
+      "name": "speed",
+      "kind": "positional or keyword",
+      "annotation": "float",
+      "default": null
+     },
+     {
+      "name": "duration",
+      "kind": "positional or keyword",
+      "annotation": "float",
+      "default": "None"
+     }
+    ],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Gira a câmera na horizontal. O giro para sozinho ao chegar em `pan_min`/`pan_max`."
+     },
+     {
+      "kind": "parameters",
+      "value": [
+       {
+        "name": "speed",
+        "annotation": "float",
+        "description": "velocidade de -100 a 100. Positivo gira para a direita; negativo, para a esquerda.",
+        "default": null
+       },
+       {
+        "name": "duration",
+        "annotation": "float",
+        "description": "tempo em segundos. Se informado, espera e para o giro ao final.\nSem duração, o PAN continua girando até `stop_pan()`, outro `pan()` ou o limite.",
+        "default": "None"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "name": "pan_right",
+    "path": "roverlib.modules.pan_tilt.pan_tilt.PanTilt.pan_right",
+    "kind": "function",
+    "labels": [],
+    "lineno": 204,
+    "filepath": "roverlib/modules/pan_tilt/pan_tilt.py",
+    "parameters": [
+     {
+      "name": "speed",
+      "kind": "positional or keyword",
+      "annotation": "float",
+      "default": "30"
+     },
+     {
+      "name": "duration",
+      "kind": "positional or keyword",
+      "annotation": "float",
+      "default": "None"
+     }
+    ],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Gira a câmera para a direita (velocidade de 0 a 100)."
+     }
+    ]
+   },
+   {
+    "name": "pan_left",
+    "path": "roverlib.modules.pan_tilt.pan_tilt.PanTilt.pan_left",
+    "kind": "function",
+    "labels": [],
+    "lineno": 208,
+    "filepath": "roverlib/modules/pan_tilt/pan_tilt.py",
+    "parameters": [
+     {
+      "name": "speed",
+      "kind": "positional or keyword",
+      "annotation": "float",
+      "default": "30"
+     },
+     {
+      "name": "duration",
+      "kind": "positional or keyword",
+      "annotation": "float",
+      "default": "None"
+     }
+    ],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Gira a câmera para a esquerda (velocidade de 0 a 100)."
+     }
+    ]
+   },
+   {
+    "name": "pan_to",
+    "path": "roverlib.modules.pan_tilt.pan_tilt.PanTilt.pan_to",
+    "kind": "function",
+    "labels": [],
+    "lineno": 212,
+    "filepath": "roverlib/modules/pan_tilt/pan_tilt.py",
+    "parameters": [
+     {
+      "name": "angle",
+      "kind": "positional or keyword",
+      "annotation": "float",
+      "default": null
+     },
+     {
+      "name": "speed",
+      "kind": "positional or keyword",
+      "annotation": "float",
+      "default": "None"
+     }
+    ],
+    "returns": "float",
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Gira a câmera até um ângulo estimado (0° = frente, positivo = direita)."
+     },
+     {
+      "kind": "parameters",
+      "value": [
+       {
+        "name": "angle",
+        "annotation": "float",
+        "description": "ângulo desejado. É limitado ao intervalo [pan_min, pan_max].",
+        "default": null
+       },
+       {
+        "name": "speed",
+        "annotation": "float",
+        "description": "velocidade do giro (0 a 100). Padrão: a de calibração.",
+        "default": "None"
+       }
+      ]
+     },
+     {
+      "kind": "returns",
+      "value": [
+       {
+        "name": "",
+        "annotation": "float",
+        "description": "O ângulo de destino (após o limite)."
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "name": "pan_degrees",
+    "path": "roverlib.modules.pan_tilt.pan_tilt.PanTilt.pan_degrees",
+    "kind": "function",
+    "labels": [],
+    "lineno": 234,
+    "filepath": "roverlib/modules/pan_tilt/pan_tilt.py",
+    "parameters": [
+     {
+      "name": "degrees",
+      "kind": "positional or keyword",
+      "annotation": "float",
+      "default": null
+     },
+     {
+      "name": "speed",
+      "kind": "positional or keyword",
+      "annotation": "float",
+      "default": "None"
+     }
+    ],
+    "returns": "float",
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Gira a câmera por um ângulo aproximado, a partir da posição atual.\nPositivo para a direita, negativo para a esquerda."
+     },
+     {
+      "kind": "returns",
+      "value": [
+       {
+        "name": "",
+        "annotation": "float",
+        "description": "O ângulo de destino (após o limite)."
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "name": "stop_pan",
+    "path": "roverlib.modules.pan_tilt.pan_tilt.PanTilt.stop_pan",
+    "kind": "function",
+    "labels": [],
+    "lineno": 246,
+    "filepath": "roverlib/modules/pan_tilt/pan_tilt.py",
+    "parameters": [],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Para o giro horizontal."
+     }
+    ]
+   },
+   {
+    "name": "reset_pan_position",
+    "path": "roverlib.modules.pan_tilt.pan_tilt.PanTilt.reset_pan_position",
+    "kind": "function",
+    "labels": [],
+    "lineno": 255,
+    "filepath": "roverlib/modules/pan_tilt/pan_tilt.py",
+    "parameters": [
+     {
+      "name": "angle",
+      "kind": "positional or keyword",
+      "annotation": "float",
+      "default": "0.0"
+     }
+    ],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Informa a posição real do PAN, corrigindo a estimativa.\nUse com a câmera parada, por exemplo após alinhá-la de frente (0°)."
+     }
+    ]
+   },
+   {
+    "name": "pan_position",
+    "path": "roverlib.modules.pan_tilt.pan_tilt.PanTilt.pan_position",
+    "kind": "attribute",
+    "labels": [
+     "property"
+    ],
+    "lineno": 267,
+    "filepath": "roverlib/modules/pan_tilt/pan_tilt.py",
+    "annotation": "float",
+    "value": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Ângulo estimado do PAN (0° = frente, positivo = direita)."
+     }
+    ]
+   },
+   {
+    "name": "pan_speed",
+    "path": "roverlib.modules.pan_tilt.pan_tilt.PanTilt.pan_speed",
+    "kind": "attribute",
+    "labels": [
+     "property"
+    ],
+    "lineno": 274,
+    "filepath": "roverlib/modules/pan_tilt/pan_tilt.py",
+    "annotation": "float",
+    "value": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Velocidade atual do PAN (-100 a 100)."
+     }
+    ]
+   },
+   {
+    "name": "tilt_to",
+    "path": "roverlib.modules.pan_tilt.pan_tilt.PanTilt.tilt_to",
+    "kind": "function",
+    "labels": [],
+    "lineno": 280,
+    "filepath": "roverlib/modules/pan_tilt/pan_tilt.py",
+    "parameters": [
+     {
+      "name": "angle",
+      "kind": "positional or keyword",
+      "annotation": "float",
+      "default": null
+     },
+     {
+      "name": "smooth",
+      "kind": "positional or keyword",
+      "annotation": "bool",
+      "default": "False"
+     },
+     {
+      "name": "step",
+      "kind": "positional or keyword",
+      "annotation": "float",
+      "default": "2"
+     },
+     {
+      "name": "delay",
+      "kind": "positional or keyword",
+      "annotation": "float",
+      "default": "0.02"
+     }
+    ],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Inclina a câmera para um ângulo."
+     },
+     {
+      "kind": "parameters",
+      "value": [
+       {
+        "name": "angle",
+        "annotation": "float",
+        "description": "ângulo desejado. É limitado ao intervalo [tilt_min, tilt_max].",
+        "default": null
+       },
+       {
+        "name": "smooth",
+        "annotation": "bool",
+        "description": "se True, move aos poucos em vez de saltar direto.",
+        "default": "False"
+       },
+       {
+        "name": "step",
+        "annotation": "float",
+        "description": "tamanho de cada passo do movimento suave, em graus.",
+        "default": "2"
+       },
+       {
+        "name": "delay",
+        "annotation": "float",
+        "description": "pausa entre os passos do movimento suave, em segundos.",
+        "default": "0.02"
+       }
+      ]
+     },
+     {
+      "kind": "returns",
+      "value": [
+       {
+        "name": "",
+        "annotation": null,
+        "description": "O ângulo aplicado (após o limite)."
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "name": "tilt_up",
+    "path": "roverlib.modules.pan_tilt.pan_tilt.PanTilt.tilt_up",
+    "kind": "function",
+    "labels": [],
+    "lineno": 306,
+    "filepath": "roverlib/modules/pan_tilt/pan_tilt.py",
+    "parameters": [
+     {
+      "name": "step",
+      "kind": "positional or keyword",
+      "annotation": "float",
+      "default": "10"
+     },
+     {
+      "name": "smooth",
+      "kind": "positional or keyword",
+      "annotation": "bool",
+      "default": "False"
+     }
+    ],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Inclina a câmera para cima em `step` graus."
+     }
+    ]
+   },
+   {
+    "name": "tilt_down",
+    "path": "roverlib.modules.pan_tilt.pan_tilt.PanTilt.tilt_down",
+    "kind": "function",
+    "labels": [],
+    "lineno": 310,
+    "filepath": "roverlib/modules/pan_tilt/pan_tilt.py",
+    "parameters": [
+     {
+      "name": "step",
+      "kind": "positional or keyword",
+      "annotation": "float",
+      "default": "10"
+     },
+     {
+      "name": "smooth",
+      "kind": "positional or keyword",
+      "annotation": "bool",
+      "default": "False"
+     }
+    ],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Inclina a câmera para baixo em `step` graus."
+     }
+    ]
+   },
+   {
+    "name": "tilt_angle",
+    "path": "roverlib.modules.pan_tilt.pan_tilt.PanTilt.tilt_angle",
+    "kind": "attribute",
+    "labels": [
+     "property"
+    ],
+    "lineno": 315,
+    "filepath": "roverlib/modules/pan_tilt/pan_tilt.py",
+    "annotation": "float",
+    "value": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Ângulo atual do TILT (o centro, se ainda não foi movido)."
+     }
+    ]
+   },
+   {
+    "name": "center",
+    "path": "roverlib.modules.pan_tilt.pan_tilt.PanTilt.center",
+    "kind": "function",
+    "labels": [],
+    "lineno": 325,
+    "filepath": "roverlib/modules/pan_tilt/pan_tilt.py",
+    "parameters": [
+     {
+      "name": "smooth",
+      "kind": "positional or keyword",
+      "annotation": "bool",
+      "default": "False"
+     }
+    ],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Volta a câmera para a frente: PAN em 0° (estimado) e TILT no centro."
+     }
+    ]
+   },
+   {
+    "name": "stop",
+    "path": "roverlib.modules.pan_tilt.pan_tilt.PanTilt.stop",
+    "kind": "function",
+    "labels": [],
+    "lineno": 330,
+    "filepath": "roverlib/modules/pan_tilt/pan_tilt.py",
+    "parameters": [],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Para o PAN (o TILT mantém a posição)."
+     }
+    ]
+   },
+   {
+    "name": "cleanup",
+    "path": "roverlib.modules.pan_tilt.pan_tilt.PanTilt.cleanup",
+    "kind": "function",
+    "labels": [],
+    "lineno": 334,
+    "filepath": "roverlib/modules/pan_tilt/pan_tilt.py",
+    "parameters": [],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Centraliza a câmera e desliga os sinais. Pode ser chamado mais de uma vez.\nCom `hold_tilt=True`, o TILT continua segurando a câmera no centro."
+     }
+    ]
+   }
+  ]
+ },
+ "roverlib.plugins.PCAServos.pca9685.servos.PCAServos": {
+  "name": "PCAServos",
+  "path": "roverlib.plugins.PCAServos.pca9685.servos.PCAServos",
+  "kind": "class",
+  "labels": [],
+  "lineno": 27,
+  "filepath": "roverlib/plugins/PCAServos/pca9685/servos.py",
+  "bases": [],
+  "parameters": [
+   {
+    "name": "address",
+    "kind": "positional or keyword",
+    "annotation": "int",
+    "default": "64"
+   },
+   {
+    "name": "bus",
+    "kind": "positional or keyword",
+    "annotation": "int",
+    "default": "1"
+   },
+   {
+    "name": "frequency",
+    "kind": "positional or keyword",
+    "annotation": "float",
+    "default": "_DEFAULT_FREQ_HZ"
+   }
+  ],
+  "docstring": [
+   {
+    "kind": "text",
+    "value": "Interface de alto nível para controle de servos via módulo PCA9685.\nUtiliza as bibliotecas oficiais da Adafruit para resolver problemas de travamento."
+   }
+  ],
+  "members": [
+   {
+    "name": "get_servo",
+    "path": "roverlib.plugins.PCAServos.pca9685.servos.PCAServos.get_servo",
+    "kind": "function",
+    "labels": [],
+    "lineno": 53,
+    "filepath": "roverlib/plugins/PCAServos/pca9685/servos.py",
+    "parameters": [
+     {
+      "name": "channel",
+      "kind": "positional or keyword",
+      "annotation": "int",
+      "default": null
+     },
+     {
+      "name": "min_pulse",
+      "kind": "positional or keyword",
+      "annotation": "int",
+      "default": "_DEFAULT_MIN_PULSE"
+     },
+     {
+      "name": "max_pulse",
+      "kind": "positional or keyword",
+      "annotation": "int",
+      "default": "_DEFAULT_MAX_PULSE"
+     }
+    ],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Retorna a instância do servo Adafruit para o canal especificado."
+     }
+    ]
+   },
+   {
+    "name": "close",
+    "path": "roverlib.plugins.PCAServos.pca9685.servos.PCAServos.close",
+    "kind": "function",
+    "labels": [],
+    "lineno": 63,
+    "filepath": "roverlib/plugins/PCAServos/pca9685/servos.py",
+    "parameters": [
+     {
+      "name": "keep_channels",
+      "kind": "positional or keyword",
+      "annotation": null,
+      "default": "()"
+     }
+    ],
+    "returns": "None",
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Fecha o barramento I2C e desliga os canais."
+     },
+     {
+      "kind": "parameters",
+      "value": [
+       {
+        "name": "keep_channels",
+        "annotation": null,
+        "description": "canais que continuam recebendo o sinal após o fechamento\n(o PCA9685 segue gerando o PWM sozinho). Útil para um servo de posição\ncontinuar segurando uma carga, como o TILT da câmera.",
+        "default": "()"
+       }
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ "roverlib.plugins.PCAServos.pca9685.servos.Servo": {
+  "name": "Servo",
+  "path": "roverlib.plugins.PCAServos.pca9685.servos.Servo",
+  "kind": "class",
+  "labels": [],
+  "lineno": 88,
+  "filepath": "roverlib/plugins/PCAServos/pca9685/servos.py",
+  "bases": [],
+  "parameters": [
+   {
+    "name": "pca",
+    "kind": "positional or keyword",
+    "annotation": "PCAServos",
+    "default": null
+   },
+   {
+    "name": "channel",
+    "kind": "positional or keyword",
+    "annotation": "int",
+    "default": null
+   },
+   {
+    "name": "min_pulse_us",
+    "kind": "positional or keyword",
+    "annotation": "int",
+    "default": "_DEFAULT_MIN_PULSE"
+   },
+   {
+    "name": "max_pulse_us",
+    "kind": "positional or keyword",
+    "annotation": "int",
+    "default": "_DEFAULT_MAX_PULSE"
+   }
+  ],
+  "docstring": [
+   {
+    "kind": "text",
+    "value": "Abstração compatível com a sua interface antiga, mas que usa a Adafruit por trás."
+   }
+  ],
+  "members": [
+   {
+    "name": "detach",
+    "path": "roverlib.plugins.PCAServos.pca9685.servos.Servo.detach",
+    "kind": "function",
+    "labels": [],
+    "lineno": 114,
+    "filepath": "roverlib/plugins/PCAServos/pca9685/servos.py",
+    "parameters": [],
+    "returns": "None",
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Desativa o sinal PWM do servo (corta o torque)."
+     }
+    ]
+   },
+   {
+    "name": "center",
+    "path": "roverlib.plugins.PCAServos.pca9685.servos.Servo.center",
+    "kind": "function",
+    "labels": [],
+    "lineno": 118,
+    "filepath": "roverlib/plugins/PCAServos/pca9685/servos.py",
+    "parameters": [],
+    "returns": "None",
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Move o servo para o centro (90°)."
+     }
+    ]
+   }
+  ]
+ },
+ "roverlib.plugins.PCAServos.pca9685.servos.ContinuousServo": {
+  "name": "ContinuousServo",
+  "path": "roverlib.plugins.PCAServos.pca9685.servos.ContinuousServo",
+  "kind": "class",
+  "labels": [],
+  "lineno": 126,
+  "filepath": "roverlib/plugins/PCAServos/pca9685/servos.py",
+  "bases": [],
+  "parameters": [
+   {
+    "name": "pca",
+    "kind": "positional or keyword",
+    "annotation": "PCAServos",
+    "default": null
+   },
+   {
+    "name": "channel",
+    "kind": "positional or keyword",
+    "annotation": "int",
+    "default": null
+   },
+   {
+    "name": "min_pulse_us",
+    "kind": "positional or keyword",
+    "annotation": "int",
+    "default": "_DEFAULT_MIN_PULSE"
+   },
+   {
+    "name": "max_pulse_us",
+    "kind": "positional or keyword",
+    "annotation": "int",
+    "default": "_DEFAULT_MAX_PULSE"
+   },
+   {
+    "name": "neutral_pulse_us",
+    "kind": "positional or keyword",
+    "annotation": "int",
+    "default": "1500"
+   }
+  ],
+  "docstring": [
+   {
+    "kind": "text",
+    "value": "Abstração para servo de rotação contínua 360° usando a biblioteca Adafruit."
+   }
+  ],
+  "members": [
+   {
+    "name": "stop",
+    "path": "roverlib.plugins.PCAServos.pca9685.servos.ContinuousServo.stop",
+    "kind": "function",
+    "labels": [],
+    "lineno": 158,
+    "filepath": "roverlib/plugins/PCAServos/pca9685/servos.py",
+    "parameters": [],
+    "returns": "None",
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Para o servo."
+     }
+    ]
+   },
+   {
+    "name": "detach",
+    "path": "roverlib.plugins.PCAServos.pca9685.servos.ContinuousServo.detach",
+    "kind": "function",
+    "labels": [],
+    "lineno": 162,
+    "filepath": "roverlib/plugins/PCAServos/pca9685/servos.py",
+    "parameters": [],
+    "returns": "None",
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Desativa o sinal PWM."
+     }
+    ]
+   }
+  ]
+ },
+ "roverlib.rover.Rover": {
+  "name": "Rover",
+  "path": "roverlib.rover.Rover",
+  "kind": "class",
+  "labels": [],
+  "lineno": 50,
+  "filepath": "roverlib/rover.py",
+  "bases": [],
+  "parameters": [
+   {
+    "name": "motors",
+    "kind": "positional or keyword",
+    "annotation": "dict",
+    "default": "None"
+   },
+   {
+    "name": "camera",
+    "kind": "positional or keyword",
+    "annotation": "dict",
+    "default": "None"
+   },
+   {
+    "name": "lidar",
+    "kind": "positional or keyword",
+    "annotation": "dict",
+    "default": "None"
+   },
+   {
+    "name": "pan_tilt",
+    "kind": "positional or keyword",
+    "annotation": "dict",
+    "default": "None"
+   }
+  ],
+  "docstring": [
+   {
+    "kind": "text",
+    "value": "Reúne os componentes do Rover em um único objeto:\n\n    rover.move    -> Robot (forward, backward, turn_left, turn_right, move, turn_degrees, stop)\n    rover.camera  -> Camera (Raspberry Pi) ou Webcam (PC)\n    rover.lidar   -> Lidar TF-Luna\n    rover.pan_tilt -> PanTilt (servos da câmera: PAN 360°, TILT 180°)\n\nSó são criados os componentes presentes na configuração. Acessar um componente\nnão configurado gera ComponentNotAvailable com a explicação do que falta."
+   },
+   {
+    "kind": "text",
+    "value": "Monta o Rover a partir de dicionários de configuração (as mesmas seções do config.yaml).\nPasse None para não usar o componente."
+   },
+   {
+    "kind": "parameters",
+    "value": [
+     {
+      "name": "motors",
+      "annotation": "dict",
+      "description": "right, left, calibration {right, left}, pwm_frequency, simulate",
+      "default": "None"
+     },
+     {
+      "name": "camera",
+      "annotation": "dict",
+      "description": "width, height, fps, index, webcam, horizontal_flip, vertical_flip,\n           format, brightness, contrast, saturation",
+      "default": "None"
+     },
+     {
+      "name": "lidar",
+      "annotation": "dict",
+      "description": "port, baudrate, simulate, simulated_distance",
+      "default": "None"
+     },
+     {
+      "name": "pan_tilt",
+      "annotation": "dict",
+      "description": "address, simulate,\n             pan {channel, trim, invert, min, max, degrees_per_second, calibration_speed},\n             tilt {channel, min, max, center, invert, hold}",
+      "default": "None"
+     }
+    ]
+   }
+  ],
+  "members": [
+   {
+    "name": "from_config",
+    "path": "roverlib.rover.Rover.from_config",
+    "kind": "function",
+    "labels": [
+     "classmethod"
+    ],
+    "lineno": 99,
+    "filepath": "roverlib/rover.py",
+    "parameters": [
+     {
+      "name": "path",
+      "kind": "positional or keyword",
+      "annotation": null,
+      "default": "'config.yaml'"
+     }
+    ],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Cria o Rover a partir de um arquivo YAML.\n\nSeções reconhecidas (todas opcionais):\n\n    motors:\n      right: [17, 26]\n      left: [25, 16]\n      calibration: {right: 1, left: 1}\n      simulate: auto        # auto | true | false\n    camera:\n      width: 640\n      height: 480\n      fps: 30\n      webcam: auto          # auto | true | false\n    lidar:\n      port: /dev/ttyAMA0\n    pan_tilt:\n      pan: {channel: 0}     # servo 360°\n      tilt: {channel: 1}    # servo 180°\n\nPor compatibilidade com os exemplos, também aceita os motores em `gpio: motor:`."
+     }
+    ]
+   },
+   {
+    "name": "move",
+    "path": "roverlib.rover.Rover.move",
+    "kind": "attribute",
+    "labels": [
+     "property"
+    ],
+    "lineno": 260,
+    "filepath": "roverlib/rover.py",
+    "annotation": "Robot",
+    "value": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Controle de movimento (Robot)."
+     }
+    ]
+   },
+   {
+    "name": "camera",
+    "path": "roverlib.rover.Rover.camera",
+    "kind": "attribute",
+    "labels": [
+     "property"
+    ],
+    "lineno": 265,
+    "filepath": "roverlib/rover.py",
+    "annotation": null,
+    "value": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Câmera (Camera na Raspberry Pi, Webcam no PC)."
+     }
+    ]
+   },
+   {
+    "name": "lidar",
+    "path": "roverlib.rover.Rover.lidar",
+    "kind": "attribute",
+    "labels": [
+     "property"
+    ],
+    "lineno": 270,
+    "filepath": "roverlib/rover.py",
+    "annotation": null,
+    "value": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Lidar TF-Luna."
+     }
+    ]
+   },
+   {
+    "name": "pan_tilt",
+    "path": "roverlib.rover.Rover.pan_tilt",
+    "kind": "attribute",
+    "labels": [
+     "property"
+    ],
+    "lineno": 275,
+    "filepath": "roverlib/rover.py",
+    "annotation": null,
+    "value": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Servos da câmera (PanTilt)."
+     }
+    ]
+   },
+   {
+    "name": "has",
+    "path": "roverlib.rover.Rover.has",
+    "kind": "function",
+    "labels": [],
+    "lineno": 279,
+    "filepath": "roverlib/rover.py",
+    "parameters": [
+     {
+      "name": "name",
+      "kind": "positional or keyword",
+      "annotation": "str",
+      "default": null
+     }
+    ],
+    "returns": "bool",
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Indica se um componente ('move', 'camera', 'lidar' ou 'pan_tilt') está disponível."
+     }
+    ]
+   },
+   {
+    "name": "simulated",
+    "path": "roverlib.rover.Rover.simulated",
+    "kind": "attribute",
+    "labels": [
+     "property"
+    ],
+    "lineno": 284,
+    "filepath": "roverlib/rover.py",
+    "annotation": "bool",
+    "value": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "True se os motores estão em modo simulação."
+     }
+    ]
+   },
+   {
+    "name": "stop",
+    "path": "roverlib.rover.Rover.stop",
+    "kind": "function",
+    "labels": [],
+    "lineno": 290,
+    "filepath": "roverlib/rover.py",
+    "parameters": [],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Para os motores e o giro da câmera."
+     }
+    ]
+   },
+   {
+    "name": "cleanup",
+    "path": "roverlib.rover.Rover.cleanup",
+    "kind": "function",
+    "labels": [],
+    "lineno": 297,
+    "filepath": "roverlib/rover.py",
+    "parameters": [],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Para os motores e libera todos os recursos. Pode ser chamado mais de uma vez."
+     }
+    ]
+   }
+  ]
+ },
+ "roverlib.plugins.lidar.lidar.Lidar": {
+  "name": "Lidar",
+  "path": "roverlib.plugins.lidar.lidar.Lidar",
+  "kind": "class",
+  "labels": [],
+  "lineno": 27,
+  "filepath": "roverlib/plugins/lidar/lidar.py",
+  "bases": [],
+  "parameters": [
+   {
+    "name": "port",
+    "kind": "positional or keyword",
+    "annotation": "str",
+    "default": "'/dev/ttyAMA0'"
+   },
+   {
+    "name": "baudrate",
+    "kind": "positional or keyword",
+    "annotation": "int",
+    "default": "115200"
+   },
+   {
+    "name": "bytesize",
+    "kind": "positional or keyword",
+    "annotation": "int",
+    "default": "8"
+   },
+   {
+    "name": "parity",
+    "kind": "positional or keyword",
+    "annotation": "str",
+    "default": "'N'"
+   },
+   {
+    "name": "stopbits",
+    "kind": "positional or keyword",
+    "annotation": "float",
+    "default": "1"
+   },
+   {
+    "name": "timeout",
+    "kind": "positional or keyword",
+    "annotation": "int",
+    "default": "1"
+   }
+  ],
+  "docstring": [
+   {
+    "kind": "text",
+    "value": "Plugin do Lidar TF-Luna. Realiza sua configuração e controle.\n\nO TF-Luna mede a distância de um único ponto (à frente do sensor),\nentre 0,2 m e 8 m.\n\nExemplo:\n\n```python\nwith Lidar() as lidar:\n    print(lidar.get_distance())\n    if lidar.is_obstacle(30):\n        print(\"Obstáculo a menos de 30 cm!\")\n```"
+   },
+   {
+    "kind": "text",
+    "value": "Realiza a configuração inicial do Lidar."
+   },
+   {
+    "kind": "parameters",
+    "value": [
+     {
+      "name": "port",
+      "annotation": "str",
+      "description": "recebe o arquivo de dispositivo com os pinos da GPIO",
+      "default": "'/dev/ttyAMA0'"
+     },
+     {
+      "name": "baudrate",
+      "annotation": "int",
+      "description": "Define a velocidade do sinal. Ambos os dispositivos devem trabalhar na mesma velocidade",
+      "default": "115200"
+     },
+     {
+      "name": "parity",
+      "annotation": "str",
+      "description": "Não adiciona bit de paridade",
+      "default": "'N'"
+     },
+     {
+      "name": "stopbits",
+      "annotation": "float",
+      "description": "Um bit de duração lógica alta ao final de cada pacote",
+      "default": "1"
+     },
+     {
+      "name": "bytesize",
+      "annotation": "int",
+      "description": "Tamanho de cada pacote",
+      "default": "8"
+     },
+     {
+      "name": "timeout",
+      "annotation": "int",
+      "description": "Tempo máximo de espera pelo próximo pacote (segundos)",
+      "default": "1"
+     }
+    ]
+   }
+  ],
+  "members": [
+   {
+    "name": "start",
+    "path": "roverlib.plugins.lidar.lidar.Lidar.start",
+    "kind": "function",
+    "labels": [],
+    "lineno": 92,
+    "filepath": "roverlib/plugins/lidar/lidar.py",
+    "parameters": [],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Inicia o funcionamento do Lidar com as configurações estabelecidas"
+     }
+    ]
+   },
+   {
+    "name": "is_open",
+    "path": "roverlib.plugins.lidar.lidar.Lidar.is_open",
+    "kind": "function",
+    "labels": [],
+    "lineno": 117,
+    "filepath": "roverlib/plugins/lidar/lidar.py",
+    "parameters": [],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Verifica o estado do Lidar"
+     },
+     {
+      "kind": "returns",
+      "value": [
+       {
+        "name": "",
+        "annotation": null,
+        "description": "Valor Bool: (True se ativo, false se nao)"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "name": "get_read",
+    "path": "roverlib.plugins.lidar.lidar.Lidar.get_read",
+    "kind": "function",
+    "labels": [],
+    "lineno": 183,
+    "filepath": "roverlib/plugins/lidar/lidar.py",
+    "parameters": [],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Getter das leituras do Lidar"
+     },
+     {
+      "kind": "returns",
+      "value": [
+       {
+        "name": "",
+        "annotation": null,
+        "description": "Distância da superfície (cm), força do sinal e temperatura do chip (°C)"
+       },
+       {
+        "name": "",
+        "annotation": null,
+        "description": "Nessa ordem. Retorna (-1, -1, -1) enquanto nenhuma leitura foi feita."
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "name": "get_distance",
+    "path": "roverlib.plugins.lidar.lidar.Lidar.get_distance",
+    "kind": "function",
+    "labels": [],
+    "lineno": 193,
+    "filepath": "roverlib/plugins/lidar/lidar.py",
+    "parameters": [
+     {
+      "name": "unit",
+      "kind": "positional or keyword",
+      "annotation": "str",
+      "default": "'cm'"
+     }
+    ],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Retorna apenas a distância medida pelo Lidar."
+     },
+     {
+      "kind": "parameters",
+      "value": [
+       {
+        "name": "unit",
+        "annotation": "str",
+        "description": "Unidade da distância: \"cm\" (padrão), \"m\" ou \"mm\"",
+        "default": "'cm'"
+       }
+      ]
+     },
+     {
+      "kind": "returns",
+      "value": [
+       {
+        "name": "",
+        "annotation": null,
+        "description": "A distância na unidade escolhida, ou None se ainda não houver leitura"
+       },
+       {
+        "name": "",
+        "annotation": null,
+        "description": "ou se a leitura não for confiável (sinal fraco ou saturado)."
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "name": "is_obstacle",
+    "path": "roverlib.plugins.lidar.lidar.Lidar.is_obstacle",
+    "kind": "function",
+    "labels": [],
+    "lineno": 214,
+    "filepath": "roverlib/plugins/lidar/lidar.py",
+    "parameters": [
+     {
+      "name": "limit_cm",
+      "kind": "positional or keyword",
+      "annotation": "float",
+      "default": "30"
+     }
+    ],
+    "returns": "bool",
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Indica se existe um obstáculo à frente, mais perto que o limite."
+     },
+     {
+      "kind": "parameters",
+      "value": [
+       {
+        "name": "limit_cm",
+        "annotation": "float",
+        "description": "Distância limite em centímetros (padrão: 30 cm)",
+        "default": "30"
+       }
+      ]
+     },
+     {
+      "kind": "returns",
+      "value": [
+       {
+        "name": "",
+        "annotation": "bool",
+        "description": "True se houver uma leitura válida menor ou igual ao limite, False caso contrário."
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "name": "stop",
+    "path": "roverlib.plugins.lidar.lidar.Lidar.stop",
+    "kind": "function",
+    "labels": [],
+    "lineno": 227,
+    "filepath": "roverlib/plugins/lidar/lidar.py",
+    "parameters": [],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Encerra a operação do Lidar.\nPode ser chamado mais de uma vez e também de dentro da thread de leitura."
+     }
+    ]
+   },
+   {
+    "name": "change_config",
+    "path": "roverlib.plugins.lidar.lidar.Lidar.change_config",
+    "kind": "function",
+    "labels": [],
+    "lineno": 243,
+    "filepath": "roverlib/plugins/lidar/lidar.py",
+    "parameters": [
+     {
+      "name": "settings",
+      "kind": "variadic keyword",
+      "annotation": null,
+      "default": "{}"
+     }
+    ],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Permite mudança nas configurações da porta serial do Lidar."
+     },
+     {
+      "kind": "parameters",
+      "value": [
+       {
+        "name": "**settings",
+        "annotation": null,
+        "description": "Configurações a alterar (ex.: timeout=2, baudrate=115200).\n         Sem argumentos, apenas retorna as configurações atuais.",
+        "default": "{}"
+       }
+      ]
+     },
+     {
+      "kind": "returns",
+      "value": [
+       {
+        "name": "",
+        "annotation": null,
+        "description": "dict com as configurações atuais (após a alteração)"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "name": "clean_in_buffer",
+    "path": "roverlib.plugins.lidar.lidar.Lidar.clean_in_buffer",
+    "kind": "function",
+    "labels": [],
+    "lineno": 270,
+    "filepath": "roverlib/plugins/lidar/lidar.py",
+    "parameters": [],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Limpa o buffer de entrada do lidar"
+     }
+    ]
+   },
+   {
+    "name": "clean_out_buffer",
+    "path": "roverlib.plugins.lidar.lidar.Lidar.clean_out_buffer",
+    "kind": "function",
+    "labels": [],
+    "lineno": 277,
+    "filepath": "roverlib/plugins/lidar/lidar.py",
+    "parameters": [],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Limpa o buffer de saída do lidar"
+     }
+    ]
+   },
+   {
+    "name": "get_in_buffer",
+    "path": "roverlib.plugins.lidar.lidar.Lidar.get_in_buffer",
+    "kind": "function",
+    "labels": [],
+    "lineno": 284,
+    "filepath": "roverlib/plugins/lidar/lidar.py",
+    "parameters": [],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Adquire a quantidade de bytes no buffer de entrada do lidar"
+     },
+     {
+      "kind": "returns",
+      "value": [
+       {
+        "name": "in_buffer",
+        "annotation": null,
+        "description": "Quantidade de bytes no buffer de entrada"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "name": "get_out_buffer",
+    "path": "roverlib.plugins.lidar.lidar.Lidar.get_out_buffer",
+    "kind": "function",
+    "labels": [],
+    "lineno": 294,
+    "filepath": "roverlib/plugins/lidar/lidar.py",
+    "parameters": [],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Adquire a quantidade de bytes no buffer de saida do lidar"
+     },
+     {
+      "kind": "returns",
+      "value": [
+       {
+        "name": "out_buffer",
+        "annotation": null,
+        "description": "Quantidade de bytes no buffer de saida"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "name": "get_reads_until",
+    "path": "roverlib.plugins.lidar.lidar.Lidar.get_reads_until",
+    "kind": "function",
+    "labels": [],
+    "lineno": 304,
+    "filepath": "roverlib/plugins/lidar/lidar.py",
+    "parameters": [
+     {
+      "name": "quant",
+      "kind": "positional or keyword",
+      "annotation": "int",
+      "default": null
+     }
+    ],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Lê bytes brutos da porta serial até atingir a quantidade desejada\n(ou até o timeout). Uso avançado/depuração: enquanto a leitura em\nsegundo plano estiver ativa, ela também consome os bytes da porta."
+     },
+     {
+      "kind": "parameters",
+      "value": [
+       {
+        "name": "quant",
+        "annotation": "int",
+        "description": "Quantidade de bytes esperados para encerrar a leitura",
+        "default": null
+       }
+      ]
+     },
+     {
+      "kind": "returns",
+      "value": [
+       {
+        "name": "",
+        "annotation": null,
+        "description": "Os bytes lidos até satisfeita a quantidade desejada"
+       }
+      ]
+     },
+     {
+      "kind": "raises",
+      "value": [
+       {
+        "name": "",
+        "annotation": "LidarNotStart",
+        "description": "RunTimeError pois o Lidar não foi iniciado corretamente"
+       },
+       {
+        "name": "",
+        "annotation": "LidarNotRespond",
+        "description": "O Lidar foi iniciado, mas não envia nenhum dado"
+       }
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ "roverlib.plugins.lidar.virtual.VirtualLidar": {
+  "name": "VirtualLidar",
+  "path": "roverlib.plugins.lidar.virtual.VirtualLidar",
+  "kind": "class",
+  "labels": [],
+  "lineno": 12,
+  "filepath": "roverlib/plugins/lidar/virtual.py",
+  "bases": [],
+  "parameters": [
+   {
+    "name": "distance",
+    "kind": "positional or keyword",
+    "annotation": "float",
+    "default": "200"
+   },
+   {
+    "name": "strength",
+    "kind": "positional or keyword",
+    "annotation": "int",
+    "default": "1000"
+   },
+   {
+    "name": "temperature",
+    "kind": "positional or keyword",
+    "annotation": "float",
+    "default": "30.0"
+   },
+   {
+    "name": "verbose",
+    "kind": "positional or keyword",
+    "annotation": "bool",
+    "default": "True"
+   },
+   {
+    "name": "_serial_options",
+    "kind": "variadic keyword",
+    "annotation": null,
+    "default": "{}"
+   }
+  ],
+  "docstring": [
+   {
+    "kind": "text",
+    "value": "Simula o Lidar TF-Luna. A distância \"medida\" é a que você definir:\n\n    lidar = VirtualLidar(distance=200)\n    lidar.start()\n    lidar.is_obstacle(30)     # False\n    lidar.set_distance(20)    # simula um obstáculo a 20 cm\n    lidar.is_obstacle(30)     # True"
+   },
+   {
+    "kind": "parameters",
+    "value": [
+     {
+      "name": "distance",
+      "annotation": "float",
+      "description": "distância simulada, em cm (padrão 200 cm: caminho livre).",
+      "default": "200"
+     },
+     {
+      "name": "strength",
+      "annotation": "int",
+      "description": "força do sinal simulada (abaixo de 100 a leitura é considerada inválida).",
+      "default": "1000"
+     },
+     {
+      "name": "temperature",
+      "annotation": "float",
+      "description": "temperatura simulada do chip, em °C.",
+      "default": "30.0"
+     },
+     {
+      "name": "verbose",
+      "annotation": "bool",
+      "description": "se True, imprime quando a distância simulada muda.",
+      "default": "True"
+     },
+     {
+      "name": "**_serial_options",
+      "annotation": null,
+      "description": "opções do Lidar real (port, baudrate...), aceitas e ignoradas.",
+      "default": "{}"
+     }
+    ]
+   }
+  ],
+  "members": [
+   {
+    "name": "start",
+    "path": "roverlib.plugins.lidar.virtual.VirtualLidar.start",
+    "kind": "function",
+    "labels": [],
+    "lineno": 49,
+    "filepath": "roverlib/plugins/lidar/virtual.py",
+    "parameters": [],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Inicia a simulação."
+     }
+    ]
+   },
+   {
+    "name": "stop",
+    "path": "roverlib.plugins.lidar.virtual.VirtualLidar.stop",
+    "kind": "function",
+    "labels": [],
+    "lineno": 54,
+    "filepath": "roverlib/plugins/lidar/virtual.py",
+    "parameters": [],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Encerra a simulação. Pode ser chamado mais de uma vez."
+     }
+    ]
+   },
+   {
+    "name": "set_distance",
+    "path": "roverlib.plugins.lidar.virtual.VirtualLidar.set_distance",
+    "kind": "function",
+    "labels": [],
+    "lineno": 61,
+    "filepath": "roverlib/plugins/lidar/virtual.py",
+    "parameters": [
+     {
+      "name": "distance",
+      "kind": "positional or keyword",
+      "annotation": "float",
+      "default": null
+     },
+     {
+      "name": "strength",
+      "kind": "positional or keyword",
+      "annotation": "int",
+      "default": "None"
+     }
+    ],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Define a distância (cm) que o Lidar simulado vai informar."
+     }
+    ]
+   },
+   {
+    "name": "get_read",
+    "path": "roverlib.plugins.lidar.virtual.VirtualLidar.get_read",
+    "kind": "function",
+    "labels": [],
+    "lineno": 68,
+    "filepath": "roverlib/plugins/lidar/virtual.py",
+    "parameters": [],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Retorna (distância em cm, força do sinal, temperatura do chip)."
+     }
+    ]
+   },
+   {
+    "name": "get_distance",
+    "path": "roverlib.plugins.lidar.virtual.VirtualLidar.get_distance",
+    "kind": "function",
+    "labels": [],
+    "lineno": 74,
+    "filepath": "roverlib/plugins/lidar/virtual.py",
+    "parameters": [
+     {
+      "name": "unit",
+      "kind": "positional or keyword",
+      "annotation": "str",
+      "default": "'cm'"
+     }
+    ],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Distância em \"cm\", \"m\" ou \"mm\"; None se a leitura não for confiável."
+     }
+    ]
+   },
+   {
+    "name": "is_obstacle",
+    "path": "roverlib.plugins.lidar.virtual.VirtualLidar.is_obstacle",
+    "kind": "function",
+    "labels": [],
+    "lineno": 84,
+    "filepath": "roverlib/plugins/lidar/virtual.py",
+    "parameters": [
+     {
+      "name": "limit_cm",
+      "kind": "positional or keyword",
+      "annotation": "float",
+      "default": "30"
+     }
+    ],
+    "returns": "bool",
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "True se houver uma leitura válida menor ou igual ao limite."
+     }
+    ]
+   }
+  ]
+ },
+ "roverlib.utils.config_manager.Config": {
+  "name": "Config",
+  "path": "roverlib.utils.config_manager.Config",
+  "kind": "class",
+  "labels": [],
+  "lineno": 4,
+  "filepath": "roverlib/utils/config_manager.py",
+  "bases": [],
+  "parameters": [
+   {
+    "name": "path",
+    "kind": "positional or keyword",
+    "annotation": null,
+    "default": null
+   }
+  ],
+  "docstring": [
+   {
+    "kind": "text",
+    "value": "Lê e grava o `config.yaml` (ou qualquer arquivo YAML).\n\nO arquivo é relido a cada chamada, então mudanças feitas nele durante o programa são vistas.\nTambém serve para guardar parâmetros do seu próprio programa, como velocidades ou ganhos de um PID.\n\nExemplo:\n\n```python\nfrom roverlib import Config\n\nconfig = Config(\"config.yaml\")\ncamera = config.get(\"camera\", {})          # dicionário da seção, ou {} se não existir\npid = config.get(\"pid\", {\"kp\": 0.4})       # valor padrão para seções do seu programa\nconfig.setConfig({\"pid\": {\"kp\": 0.5}})     # grava (substitui a seção inteira)\n```"
+   },
+   {
+    "kind": "parameters",
+    "value": [
+     {
+      "name": "path",
+      "annotation": "str | Path",
+      "description": "caminho do arquivo YAML. O arquivo só é aberto ao ler ou gravar.",
+      "default": null
+     }
+    ]
+   }
+  ],
+  "members": [
+   {
+    "name": "load",
+    "path": "roverlib.utils.config_manager.Config.load",
+    "kind": "function",
+    "labels": [],
+    "lineno": 30,
+    "filepath": "roverlib/utils/config_manager.py",
+    "parameters": [],
+    "returns": "dict",
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Lê o arquivo inteiro."
+     },
+     {
+      "kind": "returns",
+      "value": [
+       {
+        "name": "dict",
+        "annotation": "dict",
+        "description": "o conteúdo do arquivo; um arquivo vazio vira `{}`."
+       }
+      ]
+     },
+     {
+      "kind": "raises",
+      "value": [
+       {
+        "name": "",
+        "annotation": "FileNotFoundError",
+        "description": "o arquivo não existe."
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "name": "get",
+    "path": "roverlib.utils.config_manager.Config.get",
+    "kind": "function",
+    "labels": [],
+    "lineno": 45,
+    "filepath": "roverlib/utils/config_manager.py",
+    "parameters": [
+     {
+      "name": "key",
+      "kind": "positional or keyword",
+      "annotation": "str",
+      "default": null
+     },
+     {
+      "name": "default",
+      "kind": "positional or keyword",
+      "annotation": null,
+      "default": "None"
+     }
+    ],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Lê uma seção (chave de primeiro nível) do arquivo."
+     },
+     {
+      "kind": "parameters",
+      "value": [
+       {
+        "name": "key",
+        "annotation": "str",
+        "description": "nome da seção, por exemplo `\"camera\"`.",
+        "default": null
+       },
+       {
+        "name": "default",
+        "annotation": null,
+        "description": "valor devolvido se a seção não existir. Padrão None.",
+        "default": "None"
+       }
+      ]
+     },
+     {
+      "kind": "returns",
+      "value": [
+       {
+        "name": "",
+        "annotation": null,
+        "description": "O valor da seção (normalmente um dicionário), ou `default`."
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "name": "setConfig",
+    "path": "roverlib.utils.config_manager.Config.setConfig",
+    "kind": "function",
+    "labels": [],
+    "lineno": 58,
+    "filepath": "roverlib/utils/config_manager.py",
+    "parameters": [
+     {
+      "name": "config_write",
+      "kind": "positional or keyword",
+      "annotation": "dict",
+      "default": null
+     }
+    ],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Grava seções no arquivo, mantendo as demais.\n\nCada chave do dicionário substitui a seção inteira de mesmo nome. Os comentários do\narquivo não são preservados na gravação."
+     },
+     {
+      "kind": "parameters",
+      "value": [
+       {
+        "name": "config_write",
+        "annotation": "dict",
+        "description": "seções a gravar, por exemplo `{\"pid\": {\"kp\": 0.5}}`.",
+        "default": null
+       }
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ "roverlib.exceptions.RoverLibError": {
+  "name": "RoverLibError",
+  "path": "roverlib.exceptions.RoverLibError",
+  "kind": "class",
+  "labels": [],
+  "lineno": 17,
+  "filepath": "roverlib/exceptions.py",
+  "bases": [
+   "Exception"
+  ],
+  "parameters": [],
+  "docstring": [
+   {
+    "kind": "text",
+    "value": "Base de todas as exceções da RoverLib.\n\nCada exceção da biblioteca também herda da exceção padrão do Python correspondente\n(`RuntimeError`, `ValueError`...), então códigos antigos que tratam essas exceções\ncontinuam funcionando.\n\nExemplo:\n\n```python\nfrom roverlib import Rover\nfrom roverlib.exceptions import RoverLibError\n\ntry:\n    with Rover.from_config(\"config.yaml\") as rover:\n        rover.camera.get_frame()\nexcept RoverLibError as erro:\n    print(\"Problema no Rover:\", erro)\n```"
+   }
+  ],
+  "members": []
+ },
+ "roverlib.exceptions.HardwareNotAvailable": {
+  "name": "HardwareNotAvailable",
+  "path": "roverlib.exceptions.HardwareNotAvailable",
+  "kind": "class",
+  "labels": [],
+  "lineno": 40,
+  "filepath": "roverlib/exceptions.py",
+  "bases": [
+   "RoverLibError",
+   "RuntimeError"
+  ],
+  "parameters": [],
+  "docstring": [
+   {
+    "kind": "text",
+    "value": "O hardware, ou a biblioteca que o acessa, não está disponível neste computador.\n\nAcontece, por exemplo, ao exigir o hardware (`simulate=False`) rodando no PC.\nCada plugin tem a sua versão: `PinNotAvailable`, `MotorCreationError`,\n`CameraNotAvailable`, `LidarNotAvailable` e `PCANotAvailable`."
+   }
+  ],
+  "members": []
+ },
+ "roverlib.rover.ComponentNotAvailable": {
+  "name": "ComponentNotAvailable",
+  "path": "roverlib.rover.ComponentNotAvailable",
+  "kind": "class",
+  "labels": [],
+  "lineno": 29,
+  "filepath": "roverlib/rover.py",
+  "bases": [
+   "RoverLibError",
+   "RuntimeError"
+  ],
+  "parameters": [],
+  "docstring": [
+   {
+    "kind": "text",
+    "value": "O componente pedido (`rover.camera`, `rover.lidar`...) não foi configurado ou não pôde ser iniciado.\n\nA mensagem diz o que fazer, por exemplo: *\"Adicione a seção 'camera:' ao config.yaml.\"*"
+   }
+  ],
+  "members": []
+ },
+ "roverlib.modules.processing.processing_image.ProcessingImage": {
+  "name": "ProcessingImage",
+  "path": "roverlib.modules.processing.processing_image.ProcessingImage",
+  "kind": "class",
+  "labels": [],
+  "lineno": 4,
+  "filepath": "roverlib/modules/processing/processing_image.py",
+  "bases": [],
+  "parameters": [],
+  "docstring": [
+   {
+    "kind": "text",
+    "value": "Funções de pré-processamento de imagem: recorte, ajuste de brilho, segmentação por cor e bordas.\n\nTodas são métodos de classe: chame direto, sem criar objeto. Recebem frames em BGR\n(como os da câmera do Rover e da webcam).\n\nExemplo:\n\n```python\nmascara = ProcessingImage.color_segmentation(frame)   # vermelho em branco, resto em preto\n```"
+   }
+  ],
+  "members": [
+   {
+    "name": "cutImage",
+    "path": "roverlib.modules.processing.processing_image.ProcessingImage.cutImage",
+    "kind": "function",
+    "labels": [
+     "classmethod"
+    ],
+    "lineno": 18,
+    "filepath": "roverlib/modules/processing/processing_image.py",
+    "parameters": [
+     {
+      "name": "frame",
+      "kind": "positional or keyword",
+      "annotation": null,
+      "default": null
+     },
+     {
+      "name": "region_interest",
+      "kind": "positional or keyword",
+      "annotation": "tuple[int, int, int, int]",
+      "default": null
+     }
+    ],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Recorta uma região retangular da imagem."
+     },
+     {
+      "kind": "parameters",
+      "value": [
+       {
+        "name": "frame",
+        "annotation": "numpy.ndarray",
+        "description": "imagem de entrada.",
+        "default": null
+       },
+       {
+        "name": "region_interest",
+        "annotation": "tuple[int, int, int, int]",
+        "description": "`(x, y, largura, altura)` da região, em pixels,\na partir do canto superior esquerdo `(x, y)`.",
+        "default": null
+       }
+      ]
+     },
+     {
+      "kind": "returns",
+      "value": [
+       {
+        "name": "",
+        "annotation": null,
+        "description": "numpy.ndarray: a região recortada."
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "name": "ligh_adjustment",
+    "path": "roverlib.modules.processing.processing_image.ProcessingImage.ligh_adjustment",
+    "kind": "function",
+    "labels": [
+     "classmethod"
+    ],
+    "lineno": 36,
+    "filepath": "roverlib/modules/processing/processing_image.py",
+    "parameters": [
+     {
+      "name": "img",
+      "kind": "positional or keyword",
+      "annotation": null,
+      "default": null
+     },
+     {
+      "name": "gamma",
+      "kind": "positional or keyword",
+      "annotation": null,
+      "default": "1.9"
+     }
+    ],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Ajusta o brilho por correção gama (os tons escuros e claros mudam de forma diferente)."
+     },
+     {
+      "kind": "parameters",
+      "value": [
+       {
+        "name": "img",
+        "annotation": "numpy.ndarray",
+        "description": "imagem de entrada.",
+        "default": null
+       },
+       {
+        "name": "gamma",
+        "annotation": "float",
+        "description": "maior que 1 escurece; menor que 1 clareia; 1 não muda. Padrão 1.9.",
+        "default": "1.9"
+       }
+      ]
+     },
+     {
+      "kind": "returns",
+      "value": [
+       {
+        "name": "",
+        "annotation": null,
+        "description": "numpy.ndarray: imagem com o brilho ajustado, do mesmo tamanho."
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "name": "color_segmentation",
+    "path": "roverlib.modules.processing.processing_image.ProcessingImage.color_segmentation",
+    "kind": "function",
+    "labels": [
+     "classmethod"
+    ],
+    "lineno": 62,
+    "filepath": "roverlib/modules/processing/processing_image.py",
+    "parameters": [
+     {
+      "name": "img",
+      "kind": "positional or keyword",
+      "annotation": null,
+      "default": null
+     },
+     {
+      "name": "low_color1",
+      "kind": "positional or keyword",
+      "annotation": null,
+      "default": "(0, 120, 70)"
+     },
+     {
+      "name": "upper_color1",
+      "kind": "positional or keyword",
+      "annotation": null,
+      "default": "(10, 255, 255)"
+     },
+     {
+      "name": "low_color2",
+      "kind": "positional or keyword",
+      "annotation": null,
+      "default": "(170, 120, 70)"
+     },
+     {
+      "name": "upper_color2",
+      "kind": "positional or keyword",
+      "annotation": null,
+      "default": "(180, 255, 255)"
+     }
+    ],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Separa os pixels de uma cor: a máscara fica branca (255) onde está a cor e preta (0) no resto.\n\nA imagem é convertida para HSV e filtrada por dois intervalos de cor, porque o vermelho\nfica nas duas pontas da escala de matiz (0–10 e 170–180). Depois, a máscara é limpa\n(remoção de ruído, preenchimento de buracos) e suavizada.\n\nPor padrão, segmenta o **vermelho**. Para outra cor, passe os intervalos HSV do OpenCV\n(matiz 0–180, saturação e valor 0–255); por exemplo, para azul use\n`low_color1=(100, 120, 70), upper_color1=(130, 255, 255)` e repita os mesmos valores no segundo par."
+     },
+     {
+      "kind": "parameters",
+      "value": [
+       {
+        "name": "img",
+        "annotation": "numpy.ndarray",
+        "description": "imagem em BGR.",
+        "default": null
+       },
+       {
+        "name": "low_color1",
+        "annotation": "tuple",
+        "description": "limite inferior HSV do primeiro intervalo. Padrão `(0, 120, 70)`.",
+        "default": "(0, 120, 70)"
+       },
+       {
+        "name": "upper_color1",
+        "annotation": "tuple",
+        "description": "limite superior HSV do primeiro intervalo. Padrão `(10, 255, 255)`.",
+        "default": "(10, 255, 255)"
+       },
+       {
+        "name": "low_color2",
+        "annotation": "tuple",
+        "description": "limite inferior HSV do segundo intervalo. Padrão `(170, 120, 70)`.",
+        "default": "(170, 120, 70)"
+       },
+       {
+        "name": "upper_color2",
+        "annotation": "tuple",
+        "description": "limite superior HSV do segundo intervalo. Padrão `(180, 255, 255)`.",
+        "default": "(180, 255, 255)"
+       }
+      ]
+     },
+     {
+      "kind": "returns",
+      "value": [
+       {
+        "name": "",
+        "annotation": null,
+        "description": "numpy.ndarray: máscara em tons de cinza, do mesmo tamanho da imagem."
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "name": "color_dual_segmentation",
+    "path": "roverlib.modules.processing.processing_image.ProcessingImage.color_dual_segmentation",
+    "kind": "function",
+    "labels": [
+     "classmethod"
+    ],
+    "lineno": 120,
+    "filepath": "roverlib/modules/processing/processing_image.py",
+    "parameters": [
+     {
+      "name": "img",
+      "kind": "positional or keyword",
+      "annotation": null,
+      "default": null
+     },
+     {
+      "name": "gamma",
+      "kind": "positional or keyword",
+      "annotation": null,
+      "default": "2.3"
+     },
+     {
+      "name": "low_color1",
+      "kind": "positional or keyword",
+      "annotation": null,
+      "default": "(0, 120, 70)"
+     },
+     {
+      "name": "upper_color1",
+      "kind": "positional or keyword",
+      "annotation": null,
+      "default": "(10, 255, 255)"
+     },
+     {
+      "name": "low_color2",
+      "kind": "positional or keyword",
+      "annotation": null,
+      "default": "(170, 120, 70)"
+     },
+     {
+      "name": "upper_color2",
+      "kind": "positional or keyword",
+      "annotation": null,
+      "default": "(180, 255, 255)"
+     }
+    ],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Segmentação por cor mais tolerante à iluminação: combina a máscara da imagem original\ncom a de uma cópia escurecida por correção gama.\n\nAjuda quando o objeto tem partes muito iluminadas (reflexos), que perderiam a cor na\nimagem original. Usada pelos exemplos `circleDetect` e `folowCircle`."
+     },
+     {
+      "kind": "parameters",
+      "value": [
+       {
+        "name": "img",
+        "annotation": "numpy.ndarray",
+        "description": "imagem em BGR.",
+        "default": null
+       },
+       {
+        "name": "gamma",
+        "annotation": "float",
+        "description": "quanto escurecer a cópia (maior = mais escura). Padrão 2.3.",
+        "default": "2.3"
+       },
+       {
+        "name": "low_color1",
+        "annotation": "tuple",
+        "description": "limite inferior HSV do primeiro intervalo. Padrão `(0, 120, 70)`.",
+        "default": "(0, 120, 70)"
+       },
+       {
+        "name": "upper_color1",
+        "annotation": "tuple",
+        "description": "limite superior HSV do primeiro intervalo. Padrão `(10, 255, 255)`.",
+        "default": "(10, 255, 255)"
+       },
+       {
+        "name": "low_color2",
+        "annotation": "tuple",
+        "description": "limite inferior HSV do segundo intervalo. Padrão `(170, 120, 70)`.",
+        "default": "(170, 120, 70)"
+       },
+       {
+        "name": "upper_color2",
+        "annotation": "tuple",
+        "description": "limite superior HSV do segundo intervalo. Padrão `(180, 255, 255)`.",
+        "default": "(180, 255, 255)"
+       }
+      ]
+     },
+     {
+      "kind": "returns",
+      "value": [
+       {
+        "name": "",
+        "annotation": null,
+        "description": "numpy.ndarray: máscara do mesmo tamanho da imagem (branco = cor encontrada)."
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "name": "edge_filter",
+    "path": "roverlib.modules.processing.processing_image.ProcessingImage.edge_filter",
+    "kind": "function",
+    "labels": [
+     "classmethod"
+    ],
+    "lineno": 156,
+    "filepath": "roverlib/modules/processing/processing_image.py",
+    "parameters": [
+     {
+      "name": "img",
+      "kind": "positional or keyword",
+      "annotation": null,
+      "default": null
+     },
+     {
+      "name": "theres1",
+      "kind": "positional or keyword",
+      "annotation": null,
+      "default": "50"
+     },
+     {
+      "name": "theres2",
+      "kind": "positional or keyword",
+      "annotation": null,
+      "default": "150"
+     }
+    ],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Detecta bordas com o filtro de Canny."
+     },
+     {
+      "kind": "parameters",
+      "value": [
+       {
+        "name": "img",
+        "annotation": "numpy.ndarray",
+        "description": "imagem (em tons de cinza ou máscara).",
+        "default": null
+       },
+       {
+        "name": "theres1",
+        "annotation": "int",
+        "description": "limiar inferior: bordas mais fracas que isso são descartadas. Padrão 50.",
+        "default": "50"
+       },
+       {
+        "name": "theres2",
+        "annotation": "int",
+        "description": "limiar superior: bordas mais fortes que isso são sempre mantidas. Padrão 150.",
+        "default": "150"
+       }
+      ]
+     },
+     {
+      "kind": "returns",
+      "value": [
+       {
+        "name": "",
+        "annotation": null,
+        "description": "numpy.ndarray: imagem binária com as bordas em branco."
+       }
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ "roverlib.modules.vision.visionModule.VisionModule": {
+  "name": "VisionModule",
+  "path": "roverlib.modules.vision.visionModule.VisionModule",
+  "kind": "class",
+  "labels": [],
+  "lineno": 5,
+  "filepath": "roverlib/modules/vision/visionModule.py",
+  "bases": [],
+  "parameters": [
+   {
+    "name": "resolution",
+    "kind": "positional or keyword",
+    "annotation": null,
+    "default": null
+   }
+  ],
+  "docstring": [
+   {
+    "kind": "text",
+    "value": "Detecção de formas e objetos em imagens: círculos, linha a seguir e obstáculos coloridos.\n\n`houghCircleDetect()` e `circleCannyDetect()` são métodos de classe (use sem criar objeto) e\nrecebem uma **máscara** (por exemplo, de `ProcessingImage.color_segmentation()`).\n`process_frame_for_line_following()` e `detect_obstacle()` precisam de um objeto criado com a\nresolução dos frames.\n\nExemplo:\n\n```python\nmascara = ProcessingImage.color_segmentation(frame)\ncirculo, _ = VisionModule.houghCircleDetect(mascara)\nif circulo is not None:\n    x, y, raio = circulo\n```"
+   },
+   {
+    "kind": "parameters",
+    "value": [
+     {
+      "name": "resolution",
+      "annotation": "tuple",
+      "description": "`(largura, altura)` dos frames que serão processados.",
+      "default": null
+     }
+    ]
+   }
+  ],
+  "members": [
+   {
+    "name": "houghCircleDetect",
+    "path": "roverlib.modules.vision.visionModule.VisionModule.houghCircleDetect",
+    "kind": "function",
+    "labels": [
+     "classmethod"
+    ],
+    "lineno": 31,
+    "filepath": "roverlib/modules/vision/visionModule.py",
+    "parameters": [
+     {
+      "name": "img",
+      "kind": "positional or keyword",
+      "annotation": null,
+      "default": null
+     },
+     {
+      "name": "dp",
+      "kind": "positional or keyword",
+      "annotation": null,
+      "default": "1.3"
+     },
+     {
+      "name": "minDist",
+      "kind": "positional or keyword",
+      "annotation": null,
+      "default": "50"
+     },
+     {
+      "name": "canny",
+      "kind": "positional or keyword",
+      "annotation": null,
+      "default": "100"
+     },
+     {
+      "name": "accumulation",
+      "kind": "positional or keyword",
+      "annotation": null,
+      "default": "40"
+     },
+     {
+      "name": "minRadius",
+      "kind": "positional or keyword",
+      "annotation": null,
+      "default": "5"
+     },
+     {
+      "name": "maxRadius",
+      "kind": "positional or keyword",
+      "annotation": null,
+      "default": "300"
+     }
+    ],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Detecta o círculo mais evidente em uma máscara usando a Transformada de Hough.\n\nAntes do Hough, as bordas da máscara são extraídas (Canny) e fechadas com um filtro\nelíptico, o que ajuda a reconhecer objetos redondos vistos um pouco de lado."
+     },
+     {
+      "kind": "parameters",
+      "value": [
+       {
+        "name": "img",
+        "annotation": "numpy.ndarray",
+        "description": "máscara binária (branco = objeto).",
+        "default": null
+       },
+       {
+        "name": "dp",
+        "annotation": "float",
+        "description": "resolução do acumulador do Hough (1 = resolução da imagem). Padrão 1.3.",
+        "default": "1.3"
+       },
+       {
+        "name": "minDist",
+        "annotation": "int",
+        "description": "distância mínima entre centros de círculos, em pixels. Padrão 50.",
+        "default": "50"
+       },
+       {
+        "name": "canny",
+        "annotation": "int",
+        "description": "limiar superior do Canny interno do Hough. Padrão 100.",
+        "default": "100"
+       },
+       {
+        "name": "accumulation",
+        "annotation": "int",
+        "description": "votos necessários para aceitar um círculo; menor encontra mais\ncírculos, inclusive falsos. Padrão 40.",
+        "default": "40"
+       },
+       {
+        "name": "minRadius",
+        "annotation": "int",
+        "description": "menor raio procurado, em pixels. Padrão 5.",
+        "default": "5"
+       },
+       {
+        "name": "maxRadius",
+        "annotation": "int",
+        "description": "maior raio procurado, em pixels. Padrão 300.",
+        "default": "300"
+       }
+      ]
+     },
+     {
+      "kind": "returns",
+      "value": [
+       {
+        "name": "tuple",
+        "annotation": null,
+        "description": "`(circulo, bordas)`. `circulo` é `(x, y, raio)` em pixels (inteiros) do círculo\nmais votado, ou None se nenhum for encontrado; `bordas` é a imagem de bordas usada."
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "name": "circleCannyDetect",
+    "path": "roverlib.modules.vision.visionModule.VisionModule.circleCannyDetect",
+    "kind": "function",
+    "labels": [
+     "classmethod"
+    ],
+    "lineno": 82,
+    "filepath": "roverlib/modules/vision/visionModule.py",
+    "parameters": [
+     {
+      "name": "img",
+      "kind": "positional or keyword",
+      "annotation": null,
+      "default": null
+     },
+     {
+      "name": "MINRADIUS",
+      "kind": "positional or keyword",
+      "annotation": null,
+      "default": "3"
+     },
+     {
+      "name": "MINAREA",
+      "kind": "positional or keyword",
+      "annotation": null,
+      "default": "300"
+     },
+     {
+      "name": "canny",
+      "kind": "positional or keyword",
+      "annotation": null,
+      "default": "(70, 150)"
+     }
+    ],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Detecta o contorno mais redondo de uma máscara.\n\nPara cada contorno, compara a área real com a do círculo que o envolve: quanto mais\nparecidas, mais redondo é o objeto. Complementa o `houghCircleDetect()` (os exemplos\ncombinam os dois por votação)."
+     },
+     {
+      "kind": "parameters",
+      "value": [
+       {
+        "name": "img",
+        "annotation": "numpy.ndarray",
+        "description": "máscara binária (branco = objeto).",
+        "default": null
+       },
+       {
+        "name": "MINRADIUS",
+        "annotation": "int",
+        "description": "raio mínimo aceito, em pixels. Padrão 3.",
+        "default": "3"
+       },
+       {
+        "name": "MINAREA",
+        "annotation": "int",
+        "description": "área mínima do contorno, em pixels². Padrão 300.",
+        "default": "300"
+       },
+       {
+        "name": "canny",
+        "annotation": "tuple",
+        "description": "limiares `(inferior, superior)` do filtro de Canny. Padrão `(70, 150)`.",
+        "default": "(70, 150)"
+       }
+      ]
+     },
+     {
+      "kind": "returns",
+      "value": [
+       {
+        "name": "",
+        "annotation": null,
+        "description": "tuple | None: `(x, y, raio)` em pixels do contorno mais circular (erro de área abaixo\nde 35%), ou None."
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "name": "process_frame_for_line_following",
+    "path": "roverlib.modules.vision.visionModule.VisionModule.process_frame_for_line_following",
+    "kind": "function",
+    "labels": [],
+    "lineno": 133,
+    "filepath": "roverlib/modules/vision/visionModule.py",
+    "parameters": [
+     {
+      "name": "frame",
+      "kind": "positional or keyword",
+      "annotation": null,
+      "default": null
+     }
+    ],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Calcula o desvio de uma linha **branca** em relação ao centro da imagem.\n\nSó a faixa inferior da imagem (20% de baixo, logo à frente do Rover) é analisada."
+     },
+     {
+      "kind": "parameters",
+      "value": [
+       {
+        "name": "frame",
+        "annotation": "numpy.ndarray",
+        "description": "imagem em BGR.",
+        "default": null
+       }
+      ]
+     },
+     {
+      "kind": "returns",
+      "value": [
+       {
+        "name": "tuple",
+        "annotation": null,
+        "description": "`(desvio, frame_processado)`. `desvio` vai de -1.0 (linha toda à esquerda)\na 1.0 (toda à direita); 0.0 significa linha centralizada ou não encontrada.\n`frame_processado` é uma cópia com as marcações, para visualização."
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "name": "detect_obstacle",
+    "path": "roverlib.modules.vision.visionModule.VisionModule.detect_obstacle",
+    "kind": "function",
+    "labels": [],
+    "lineno": 188,
+    "filepath": "roverlib/modules/vision/visionModule.py",
+    "parameters": [
+     {
+      "name": "frame",
+      "kind": "positional or keyword",
+      "annotation": null,
+      "default": null
+     },
+     {
+      "name": "min_area_threshold",
+      "kind": "positional or keyword",
+      "annotation": null,
+      "default": "5000"
+     },
+     {
+      "name": "color_range",
+      "kind": "positional or keyword",
+      "annotation": null,
+      "default": "None"
+     }
+    ],
+    "returns": null,
+    "docstring": [
+     {
+      "kind": "text",
+      "value": "Detecta um objeto colorido grande o bastante para ser considerado um obstáculo."
+     },
+     {
+      "kind": "parameters",
+      "value": [
+       {
+        "name": "frame",
+        "annotation": "numpy.ndarray",
+        "description": "imagem em BGR.",
+        "default": null
+       },
+       {
+        "name": "min_area_threshold",
+        "annotation": "int",
+        "description": "área mínima do objeto, em pixels, para contar como obstáculo. Padrão 5000.",
+        "default": "5000"
+       },
+       {
+        "name": "color_range",
+        "annotation": "tuple",
+        "description": "`(hsv_inferior, hsv_superior)` da cor procurada.\nPadrão: vermelho.",
+        "default": "None"
+       }
+      ]
+     },
+     {
+      "kind": "returns",
+      "value": [
+       {
+        "name": "tuple",
+        "annotation": null,
+        "description": "`(detectado, frame_processado)`. `detectado` é True se houver obstáculo;\n`frame_processado` é uma cópia com o objeto marcado, para visualização."
+       }
+      ]
+     }
+    ]
+   }
+  ]
+ }
+}

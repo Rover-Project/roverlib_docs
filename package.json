@@ -1,0 +1,43 @@
+{
+  "name": "roverlib-docs",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Site de documentação da RoverLib em Next.js",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "preview": "npx serve out",
+    "sync": "node scripts/sync_docs.mjs ../docs",
+    "api": "python scripts/gen_api.py --src ../roverlib/src",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@fontsource-variable/atkinson-hyperlegible-next": "^5.3.0",
+    "@fontsource-variable/jetbrains-mono": "^5.3.0",
+    "@shikijs/rehype": "^4.6.0",
+    "hast-util-to-string": "^3.0.1",
+    "katex": "^0.19.1",
+    "minisearch": "^7.2.0",
+    "next": "^16.4.6",
+    "next-themes": "^0.4.6",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "rehype-katex": "^7.0.1",
+    "rehype-raw": "^7.0.0",
+    "rehype-stringify": "^10.0.1",
+    "remark-gfm": "^4.0.1",
+    "remark-math": "^6.0.0",
+    "remark-parse": "^11.0.0",
+    "remark-rehype": "^11.1.2",
+    "shiki": "^4.6.0",
+    "unified": "^11.0.5",
+    "unist-util-visit": "^5.2.0"
+  },
+  "devDependencies": {
+    "@types/hast": "^3.0.5",
+    "@types/node": "^26.6.6",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "typescript": "^5.9.3"
+  }
+}
